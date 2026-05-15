@@ -1,0 +1,50 @@
+{
+  "name": "ffcs-planner",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "seed": "npx tsx scripts/seed-courses.ts",
+    "load:public": "node scripts/load/run-load-test.mjs --group public",
+    "load:shared": "node scripts/load/run-load-test.mjs --group shared",
+    "load:auth": "node scripts/load/run-load-test.mjs --group auth",
+    "load:all": "node scripts/load/run-load-test.mjs --group all"
+  },
+  "dependencies": {
+    "@auth/mongodb-adapter": "^3.11.1",
+    "@flagsmith/flagsmith": "^12.0.1",
+    "@sentry/nextjs": "^10.46.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
+    "axios": "^1.13.6",
+    "html-to-image": "^1.11.13",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.0",
+    "mongodb": "^6.21.0",
+    "mongoose": "^9.2.4",
+    "next": "16.1.6",
+    "next-auth": "^4.24.13",
+    "posthog-js": "^1.364.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-joyride": "^3.1.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/dotenv": "^6.1.1",
+    "@types/jspdf": "^1.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.3.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "5.9.3"
+  }
+}
