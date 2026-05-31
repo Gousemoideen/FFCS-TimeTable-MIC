@@ -10,8 +10,17 @@ export default function MobileGuard({ children }: { children: React.ReactNode })
 
     useEffect(() => {
         const checkScreenSize = () => {
-            // 1024px is a common tablet landscape breakpoint, but 800px is safe for portrait tabs.
-            // Usually "less than tab screen size" means < 768px (iPad portrait is 768px).
+            const userAgent = navigator.userAgent.toLowerCase();
+            
+            // 1. Detect if the visitor is Googlebot or another search crawler
+            const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider/.test(userAgent);
+            
+            // 2. If it's a bot, always render the full layout so it can crawl and index everything
+            if (isBot) {
+                setShouldRender(true);
+                return;
+            }
+
             const isMobile = window.innerWidth < 768;
 
             if (isMobile && pathname !== "/mobile") {
@@ -34,7 +43,9 @@ export default function MobileGuard({ children }: { children: React.ReactNode })
     }, [router, pathname]);
 
     if (!shouldRender) {
-        return <div className="min-h-screen bg-white"></div>; // Prevents flashing during redirect
+        // Tip: You can put a subtle loading spinner or your brand color here 
+        // to make the transition look seamless to users while the redirect processes
+        return <div className="min-h-screen bg-white"></div>; 
     }
 
     return <>{children}</>;

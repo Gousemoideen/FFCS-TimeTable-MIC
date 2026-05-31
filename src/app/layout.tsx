@@ -18,19 +18,28 @@ const bodyFont = Lato({
 });
 export const metadata: Metadata = {
   metadataBase: new URL("https://ffcs.microsoftinnovations.club"),
-  title: "FFCS Planner - Build Your Timetable | MIC",
-  description: "Plan and build your perfect timetable with the FFCS Planner. Generate clash-free schedules, export them, and share them with your friends.",
-  keywords: ["FFCS", "VIT", "Timetable Planner", "Course Selection", "VIT Chennai"],
+  title: "VIT Chennai FFCS Timetable Planner & Schedule Builder | MIC",
+  description: "The ultimate VIT Chennai FFCS timetable planner. Generate clash-free schedules, visually map your slots, export your timetable grid, and share it with friends.",
+  keywords: [
+    "VIT Chennai FFCS",
+    "FFCS VIT Chennai",
+    "FFCS Planner",
+    "VIT Timetable Planner",
+    "VIT Timetable Builder",
+    "clash free timetable generator",
+    "VIT course registration slots",
+  ],
+  applicationName: "VIT Chennai FFCS Timetable Planner",
   icons: {
     icon: "/mic-logo.png",
     shortcut: "/mic-logo.png",
     apple: "/mic-logo.png",
   },
   openGraph: {
-    title: "FFCS Planner",
-    description: "Build your perfect clash-free timetable easily.",
+    title: "VIT Chennai FFCS Timetable Planner & Schedule Builder",
+    description: "Generate your perfect clash-free VIT Chennai FFCS timetable grid easily.",
     url: "https://ffcs.microsoftinnovations.club",
-    siteName: "FFCS Planner by MIC",
+    siteName: "VIT Chennai FFCS Timetable Planner by MIC",
     images: [
       {
         url: "/mic-logo.png",
@@ -43,8 +52,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FFCS Planner by MIC",
-    description: "Build your perfect clash-free timetable easily.",
+    title: "VIT Chennai FFCS Timetable Planner by MIC",
+    description: "Generate your perfect clash-free VIT Chennai FFCS timetable grid easily.",
     images: ["/mic-logo.png"],
   },
 };
