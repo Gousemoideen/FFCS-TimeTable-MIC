@@ -67,20 +67,90 @@ body {
     border-color: #9fc2fb;
 }
 
+.profile-info-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile-reg-text {
+    font-weight: 600;
+    color: #000;
+}
+
 @media (max-width: 768px) {
     .navbar {
         height: 76px;
         padding: 0 20px;
     }
+
+    .profile-info-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        line-height: 1.1;
+        min-width: 0;
+    }
+
+    .profile-name-text {
+        font-size: 12px;
+        max-width: 90px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .profile-reg-text {
+        font-size: 10px;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .profile-avatar {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .profile-chevron {
+        width: 14px !important;
+        height: 14px !important;
+    }
     
+    .hero-section {
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 20px 40px 20px;
+    }
+
     .hero-text {
-        margin-left: 0;
+        margin-left: 0 !important;
         text-align: center;
-        padding: 0 20px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .hero-text h1 br,
+    .hero-text p br {
+        display: none;
     }
     
     .hero-buttons {
         justify-content: center;
+        gap: 12px;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 12px 24px;
+        white-space: nowrap;
+    }
+
+    .hero-graphic {
+        width: 100%;
+        margin-top: 40px;
     }
 
     .logo {
@@ -487,7 +557,7 @@ body {
 .f-block {
     background: #ffffff;
     border-radius: 12px;
-    border: 1px solid #f0f0f0;
+    /* border: 1px solid #f0f0f0; */
     padding: 10px 0;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
 }
@@ -693,6 +763,10 @@ body {
         position: static;
         width: 100%;
         justify-content: center;
+    }
+    
+    .f-graphics {
+        display: none !important;
     }
 }
 
