@@ -18,6 +18,7 @@ export default function Section2(){
                 src="/section1-preview.png"
                 alt="Demo preview"
                 fill
+                unoptimized
                 className="object-cover"
               />
 

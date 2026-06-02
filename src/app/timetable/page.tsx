@@ -91,10 +91,10 @@ function TimetableTable({
     exportMode?: boolean;
 }) {
     return (
-        <table className={`w-full table-fixed border-collapse bg-white text-center min-w-full ${exportMode ? '' : 'h-full'}`}>
+        <table className={`w-full table-fixed border-collapse bg-white text-center min-w-225 xl:min-w-full ${exportMode ? '' : 'h-full'}`}>
             <thead className={exportMode ? '' : 'h-12 sticky top-0 z-20 shadow-sm'}>
                 <tr className={`border-b-2 border-white ${exportMode ? 'h-18.5' : 'h-7.5'}`}>
-                    <th className={`text-center font-bold text-black border-r-2 border-white bg-white ${exportMode ? 'w-37.5 p-3 text-[20px] leading-tight' : 'w-[5vw] p-0.5 text-[9px] leading-tight'}`}>Theory Hours</th>
+                    <th className={`text-center font-bold text-black border-r-2 border-white bg-white ${exportMode ? 'w-37.5 p-3 text-[20px] leading-tight' : 'w-15 md:w-[5vw] p-0.5 text-[9px] leading-tight'}`}>Theory Hours</th>
                     {[...leftTimes, { theory: '', lab: '' }, ...rightTimes].map((t, i) => (
                         <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-white ${i === 6 ? (exportMode ? 'w-10.5 px-0' : 'w-6 px-0') : (exportMode ? 'min-w-33 p-2 text-[16px] leading-tight' : 'min-w-12.5 p-0.5 text-[10px] leading-tight')}`}>
                             {t.theory ? t.theory.split('-').map((part, idx, arr) => (
@@ -104,7 +104,7 @@ function TimetableTable({
                     ))}
                 </tr>
                 <tr className={`border-b-2 border-white ${exportMode ? 'h-18.5' : 'h-7.5'}`}>
-                    <th className={`text-center font-bold text-black border-r-2 border-white bg-white ${exportMode ? 'w-37.5 p-3 text-[20px] leading-tight' : 'w-[5vw] p-0.5 text-[9px] leading-tight'}`}>Lab Hours</th>
+                    <th className={`text-center font-bold text-black border-r-2 border-white bg-white ${exportMode ? 'w-37.5 p-3 text-[20px] leading-tight' : 'w-[60px] md:w-[5vw] p-0.5 text-[9px] leading-tight'}`}>Lab Hours</th>
                     {[...leftTimes, { theory: '', lab: '' }, ...rightTimes].map((t, i) => (
                         <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-white ${i === 6 ? (exportMode ? 'w-10.5 px-0' : 'w-6 px-0') : (exportMode ? 'min-w-33 p-2 text-[16px] leading-tight' : 'min-w-12.5 p-0.5 text-[10px] leading-tight')}`}>
                             {t.lab ? t.lab.split('-').map((part, idx, arr) => (
@@ -117,7 +117,7 @@ function TimetableTable({
             <tbody className={exportMode ? 'bg-white' : 'bg-white h-full'}>
                 {scheduleRows.map((row, rowIdx) => (
                     <tr key={row.day} className={exportMode ? '' : 'group h-[20%]'}>
-                        <td className={`text-black text-center align-middle border-r-2 border-white bg-white font-bold ${exportMode ? 'w-37.5 p-0 text-[20px]' : 'w-[5vw] p-0 text-[9px]'}`}>{row.day}</td>
+                        <td className={`text-black text-center align-middle border-r-2 border-white bg-white font-bold ${exportMode ? 'w-37.5 p-0 text-[20px]' : 'w-15 md:w-[5vw] p-0 text-[9px]'}`}>{row.day}</td>
                         {Array.from({ length: 13 }).map((_, colIdx) => {
                             if (colIdx === 6) {
                                 const lunchLetters = ['L', 'U', 'N', 'C', 'H'];
@@ -614,8 +614,7 @@ export default function TimetablePage() {
                 </p>
                 <button
                     onClick={() => {
-                        // Keep editing state in case user wants to try again
-                        router.push('/courses');
+                        router.push('/preferences');
                     }}
                     className="px-8 py-3 bg-[#A0C4FF] text-black font-bold rounded-xl shadow-lg hover:scale-105 transition-all"
                 >
@@ -634,7 +633,7 @@ export default function TimetablePage() {
                 </div>
             )}
 
-            <div className="h-full px-[clamp(12px,1.5vw,24px)] pt-[clamp(10px,1vh,18px)] pb-29">
+            <div className="h-full px-[clamp(12px,1.5vw,24px)] pt-[clamp(10px,1vh,18px)] pb-40 md:pb-29">
                 <div className="w-full max-w-450 h-full mx-auto flex flex-col min-h-0">
                     <div data-tour="timetable-intro" className="flex items-center gap-4 px-2 pt-4.5 pb-2 shrink-0">
                         <h1 className="text-[24px] font-bold text-black">Timetables Generated</h1>
@@ -660,10 +659,10 @@ export default function TimetablePage() {
                         {/* Pagination & Action Controls */}
                         <div className="flex flex-wrap items-center justify-between pt-2 mt-2 gap-3 shrink-0 w-full border-t border-[#f2ede3]">
                             {/* Pagination */}
-                            <div data-tour="timetable-pagination" className="flex items-center gap-1 bg-[#A0C4FF]/80 p-2 rounded-xl shadow-sm">
+                            <div data-tour="timetable-pagination" className="flex items-center gap-1 bg-[#A0C4FF]/80 p-1.5 md:p-2 rounded-xl shadow-sm">
                                 <button
                                     onClick={() => setCurrentIndex(0)}
-                                    className="w-8 h-8 flex items-center justify-center rounded-lg text-black hover:bg-white/40 transition-colors font-bold text-lg"
+                                    className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-md md:rounded-lg text-black hover:bg-white/40 transition-colors font-bold text-[14px] md:text-lg"
                                 >
                                     «
                                 </button>
@@ -673,7 +672,7 @@ export default function TimetablePage() {
                                             <button
                                                 key={idx}
                                                 onClick={() => setCurrentIndex(idx)}
-                                                className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm transition-all ${currentIndex === idx
+                                                className={`w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-md md:rounded-lg font-bold text-[12px] md:text-sm transition-all ${currentIndex === idx
                                                     ? 'bg-white text-black shadow-sm'
                                                     : 'bg-transparent text-black hover:bg-white/40'
                                                     }`}
@@ -685,24 +684,24 @@ export default function TimetablePage() {
                                 </div>
                                 <button
                                     onClick={() => setCurrentIndex((timetableData?.length || 1) - 1)}
-                                    className="w-8 h-8 flex items-center justify-center rounded-lg text-black hover:bg-white/40 transition-colors font-bold text-lg"
+                                    className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-md md:rounded-lg text-black hover:bg-white/40 transition-colors font-bold text-[14px] md:text-lg"
                                 >
                                     »
                                 </button>
                             </div>
 
                             {/* Action Bar */}
-                            <div className="flex flex-wrap items-center justify-end gap-3">
+                            <div className="grid grid-cols-3 sm:flex sm:flex-row items-stretch sm:items-center justify-end gap-1.5 md:gap-3 w-full sm:w-auto">
                                 <button
                                     onClick={handleShare}
-                                    className="flex items-center gap-2 bg-[#A0C4FF] hover:bg-[#8ab2f2] text-black font-semibold py-2.5 px-6 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 text-[14px]"
+                                    className="col-span-1 sm:col-span-auto flex items-center justify-center gap-1 md:gap-2 bg-[#A0C4FF] hover:bg-[#8ab2f2] text-black font-semibold py-2.5 md:py-2.5 px-1 md:px-6 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 text-[12px] md:text-[14px] w-full sm:w-auto"
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" /></svg>
                                     Share
                                 </button>
                                 <button
                                     onClick={() => setShowDownloadModal(true)}
-                                    className="flex items-center gap-2 bg-[#C8F7DC] hover:bg-[#b0eac8] text-black font-semibold py-2.5 px-6 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 text-[14px]"
+                                    className="col-span-1 sm:col-span-auto flex items-center justify-center gap-1 md:gap-2 bg-[#C8F7DC] hover:bg-[#b0eac8] text-black font-semibold py-2 md:py-2.5 px-1 md:px-6 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 text-[12px] md:text-[14px] w-full sm:w-auto"
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
                                     Download
@@ -717,7 +716,7 @@ export default function TimetablePage() {
                                         setShowSaveModal(true);
                                     }}
                                     disabled={isSaving}
-                                    className="flex items-center gap-2 bg-[#F9A8D4]/60 hover:bg-[#F9A8D4]/80 text-black font-semibold py-2.5 px-6 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50 text-[14px]"
+                                    className="col-span-1 sm:col-span-auto flex items-center justify-center gap-1 md:gap-2 bg-[#F9A8D4]/60 hover:bg-[#F9A8D4]/80 text-black font-semibold py-2 md:py-2.5 px-1 md:px-6 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50 text-[12px] md:text-[14px] w-full sm:w-auto"
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
                                     Save
@@ -734,14 +733,14 @@ export default function TimetablePage() {
                 className="fixed bottom-0 left-0 right-0 z-40 bg-[#F5E6D3] py-6 px-[clamp(16px,2vw,32px)] w-full flex justify-center"
                 style={{ fontFamily: 'Inter, Arial, Helvetica, sans-serif' }}
             >
-                <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-4 w-full">
-                    <div className="flex items-center justify-start gap-3 w-full sm:w-auto shrink-0">
+                <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-2 w-full">
+                    <div className="flex items-center justify-start gap-3 shrink-0">
                         <button
                             type="button"
                             onClick={() => router.push('/')}
                             aria-label="Go to home page"
                             title="Home"
-                            className="bg-white rounded-xl p-3 shadow-sm flex items-center justify-center min-w-14.5 min-h-14.5 hover:bg-gray-50 transition-colors shrink-0"
+                            className="bg-white rounded-xl p-2.5 md:p-3 shadow-sm flex items-center justify-center min-w-12 min-h-12 md:min-w-14.5 md:min-h-14.5 hover:bg-gray-50 transition-colors shrink-0"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -751,7 +750,7 @@ export default function TimetablePage() {
                                 strokeWidth="2.2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                className="w-6 h-6 text-gray-800"
+                                className="w-[22px] h-[22px] md:w-6 md:h-6 text-gray-800"
                                 aria-hidden="true"
                             >
                                 <path d="M3 10.5L12 3l9 7.5" />
@@ -761,7 +760,7 @@ export default function TimetablePage() {
                         </button>
 
                         {/* LEFT - USER BOX */}
-                        <div className="bg-white rounded-xl p-3 shadow-sm flex items-center gap-3 w-full sm:w-auto overflow-hidden">
+                        <div className="hidden md:flex bg-white rounded-xl p-3 shadow-sm items-center gap-3 w-auto overflow-hidden">
                             {session?.user?.image ? (
                                 <Image src={session.user.image} alt="User avatar" width={36} height={36} className="w-9 h-9 rounded-lg border border-gray-100 shrink-0" referrerPolicy="no-referrer" />
                             ) : (
@@ -795,8 +794,8 @@ export default function TimetablePage() {
                                 }}
                                 className={`h-9.5 flex items-center justify-center rounded-md font-bold text-sm cursor-pointer transition-colors border-none ${
                                     num === 3
-                                        ? 'bg-[#A0C4FF] text-black px-4 min-w-9.5'
-                                        : 'bg-[#A0C4FF]/40 text-black min-w-9.5'
+                                        ? 'bg-[#A0C4FF] text-black px-3.5 md:px-4 min-w-8 md:min-w-9.5'
+                                        : 'bg-[#A0C4FF]/40 text-black min-w-8.5 md:min-w-9.5'
                                 }`}
                             >
                                 {num === 3 ? '3. Timetable' : num}
@@ -805,10 +804,10 @@ export default function TimetablePage() {
                     </div>
 
                     {/* RIGHT - ACTION BOX */}
-                    <div className="flex gap-3 justify-end shrink-0 ml-auto mr-auto sm:mr-0 mt-2 sm:mt-0">
+                    <div className="flex gap-2 lg:gap-3 justify-end shrink-0">
                         <button
                             onClick={() => router.push('/courses')}
-                            className="px-8 py-3 bg-[#f1eacb] hover:bg-[#E8DDB8] border-2 border-[#A0C4FF] rounded-[10px] font-bold text-sm text-black transition-all duration-200 cursor-pointer"
+                            className="px-6 md:px-8 py-2.5 md:py-3 bg-[#f1eacb] hover:bg-[#E8DDB8] border-2 border-[#A0C4FF] rounded-[10px] font-bold text-[13px] md:text-sm text-black transition-all duration-200 cursor-pointer"
                         >
                             Previous
                         </button>
@@ -821,7 +820,7 @@ export default function TimetablePage() {
                                 }
                                 router.push('/saved');
                             }}
-                            className="px-10 py-3 bg-[#A0C4FF] hover:bg-[#90B4EF] rounded-[10px] font-bold text-sm text-black transition-all duration-200 cursor-pointer"
+                            className="px-7 md:px-10 py-2.5 md:py-3 bg-[#A0C4FF] hover:bg-[#90B4EF] rounded-[10px] font-bold text-[13px] md:text-sm text-black transition-all duration-200 cursor-pointer"
                         >
                             Next
                         </button>
@@ -976,7 +975,7 @@ export default function TimetablePage() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="mb-4! flex items-start gap-4">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#C8F7DC]/80 text-black shadow-[0_10px_22px_rgba(200,247,220,0.3)]">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#C8F7DC]/80 text-black shadow-[0_10px_22px_rgba(200,247,220,0.3)]">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                                     <path d="M7 10l5 5 5-5" />
@@ -992,7 +991,7 @@ export default function TimetablePage() {
                         <div className="mb-4! flex flex-col gap-2 sm:grid-cols-2">
                             <button
                                 onClick={() => handleDownload('timetable')}
-                                className="flex min-h-16 items-center justify-center gap-1 rounded-2xl border border-[#bfead0] bg-[#C8F7DC] px-5 py-4 text-[16px] font-semibold text-black shadow-[0_8px_20px_rgba(74,54,30,0.05)] transition-all hover:bg-[#b0eac8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8F7DC] active:scale-[0.98]"
+                                className="flex min-h-16 items-center justify-center gap-1 rounded-xl border border-[#bfead0] bg-[#C8F7DC] px-5 py-4 text-[16px] font-semibold text-black shadow-[0_8px_20px_rgba(74,54,30,0.05)] transition-all hover:bg-[#b0eac8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C8F7DC] active:scale-[0.98]"
                             >
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                     <rect x="3" y="4" width="18" height="16" rx="2" />
@@ -1004,7 +1003,7 @@ export default function TimetablePage() {
                             </button>
                             <button
                                 onClick={() => handleDownload('slots')}
-                                className="flex min-h-16 items-center justify-center gap-3 rounded-2xl border border-[#d8e5fb] bg-[#A0C4FF] px-5 py-4 text-[16px] font-semibold text-black shadow-[0_8px_20px_rgba(74,54,30,0.05)] transition-all hover:bg-[#8fb6f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A0C4FF]/70 active:scale-[0.98]"
+                                className="flex min-h-16 items-center justify-center gap-3 rounded-xl border border-[#d8e5fb] bg-[#A0C4FF] px-5 py-4 text-[16px] font-semibold text-black shadow-[0_8px_20px_rgba(74,54,30,0.05)] transition-all hover:bg-[#8fb6f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A0C4FF]/70 active:scale-[0.98]"
                             >
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                     <path d="M8 6h13" />

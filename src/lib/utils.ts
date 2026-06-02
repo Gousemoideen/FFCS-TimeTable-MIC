@@ -193,3 +193,15 @@ export function getCurrentDateTime() {
         now.getDate()
     )} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 }
+
+export function parseName(fullName: string | null | undefined): { name: string; regNo: string } {
+    if (!fullName) return { name: '', regNo: '' };
+    const regNoMatch = fullName.match(/\s+([0-9]{2}[A-Z]{3}[0-9]{4})$/i);
+    if (regNoMatch) {
+        const regNo = regNoMatch[1];
+        const name = fullName.substring(0, fullName.length - regNoMatch[0].length).trim();
+        return { name, regNo };
+    }
+    return { name: fullName, regNo: '' };
+}
+

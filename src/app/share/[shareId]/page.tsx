@@ -154,21 +154,21 @@ export default function SharePage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F5E6D3] font-sans flex flex-col items-center py-8">
-            <div className="w-[95%] max-w-350 bg-[#FFFBF0] rounded-4xl p-8 my-8 pb-4 shadow-sm">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 ml-2">
-                    <div className="flex items-center gap-4">
-                        <h1 className="text-[26px] font-bold text-black">{title || 'Shared Timetable'}</h1>
-                        <div className="bg-green-100 border-2 border-green-400 rounded-lg px-4 py-2 flex items-center gap-2">
-                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="min-h-screen bg-[#F5E6D3] font-sans flex flex-col items-center py-4 md:py-8">
+            <div className="w-[95%] max-w-350 bg-[#FFFBF0] rounded-3xl md:rounded-4xl p-5 md:p-8 my-4 md:my-8 pb-4 shadow-sm">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 md:pb-6 ml-0 md:ml-2">
+                    <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
+                        <h1 className="text-[22px] md:text-[26px] font-bold text-black leading-tight">{title || 'Shared Timetable'}</h1>
+                        <div className="bg-green-50 border border-green-300 rounded-full px-2.5 py-1 flex items-center gap-1.5 w-fit shadow-sm">
+                            <svg className="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                             </svg>
-                            <span className="text-green-800 font-semibold text-sm">View Only</span>
+                            <span className="text-green-800 font-bold text-[11px] tracking-wide uppercase">View Only</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-x-auto border border-white">
+                <div className="bg-white rounded-2xl shadow-[inset_-12px_0_12px_-12px_rgba(0,0,0,0.1),0_8px_30px_rgb(0,0,0,0.02)] overflow-x-auto border border-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <table className="w-full border-collapse bg-white overflow-hidden text-center rounded-2xl">
                         <thead>
                             <tr className="border-b-2 border-white">
