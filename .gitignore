@@ -47,3 +47,8 @@ scripts/load/
 config.bat
 
 certificates
+
+# course imports
+src/data/import_courses.ts
+src/data/output_chennai_original.json
+new_courses.json
