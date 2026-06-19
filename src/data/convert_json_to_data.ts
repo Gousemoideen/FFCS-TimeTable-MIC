@@ -9,7 +9,7 @@ type RawCourseRow = Record<string, unknown> & {
 };
 
 const DATA_DIR = path.dirname(fileURLToPath(import.meta.url));
-const SRC_DATA_DIR = path.resolve(DATA_DIR, '../src/data');
+const SRC_DATA_DIR = DATA_DIR;
 const INPUT_FILE = path.join(DATA_DIR, 'output_chennai.json');
 const FALLBACK_XLSX_FILE = path.join(DATA_DIR, 'report_chennai.xlsx');
 
