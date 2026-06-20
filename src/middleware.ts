@@ -31,19 +31,56 @@ export function middleware(request: NextRequest) {
     ].join(" "),
 
     // Styles: unsafe-inline is acceptable (CSS injection risk << XSS risk)
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    [
+      "style-src 'self'",
+      "'unsafe-inline'",
+      "https://fonts.googleapis.com",
+      "https://us.posthog.com",
+      "https://eu.posthog.com",
+      "https://us.i.posthog.com",
+      "https://eu.i.posthog.com",
+      "https://us-assets.i.posthog.com",
+      "https://eu-assets.i.posthog.com",
+      "https://t.microsoftinnovations.club",
+    ].join(" "),
 
-    // Fonts: Google Fonts static CDN
-    "font-src 'self' https://fonts.gstatic.com",
+    // Fonts: Google Fonts static CDN + PostHog
+    [
+      "font-src 'self'",
+      "https://fonts.gstatic.com",
+      "https://us.posthog.com",
+      "https://eu.posthog.com",
+      "https://us.i.posthog.com",
+      "https://eu.i.posthog.com",
+      "https://us-assets.i.posthog.com",
+      "https://eu-assets.i.posthog.com",
+      "https://t.microsoftinnovations.club",
+    ].join(" "),
 
-    // Images: Google OAuth avatars + UploadThing CDN
-    "img-src 'self' data: blob: https://lh3.googleusercontent.com https://h8z6stjynz.ufs.sh",
+    // Images: Google OAuth avatars + UploadThing CDN + PostHog
+    [
+      "img-src 'self' data: blob: https://lh3.googleusercontent.com https://h8z6stjynz.ufs.sh",
+      "https://us.posthog.com",
+      "https://eu.posthog.com",
+      "https://us.i.posthog.com",
+      "https://eu.i.posthog.com",
+      "https://us-assets.i.posthog.com",
+      "https://eu-assets.i.posthog.com",
+      "https://t.microsoftinnovations.club",
+    ].join(" "),
 
     // Media: UploadThing video CDN
     "media-src 'self' https://h8z6stjynz.ufs.sh",
 
-    // Frames: YouTube nocookie embeds only
-    "frame-src https://www.youtube-nocookie.com",
+    // Frames: YouTube nocookie embeds + PostHog Toolbar
+    [
+      "frame-src https://www.youtube-nocookie.com",
+      "https://us.posthog.com",
+      "https://eu.posthog.com",
+      "https://us.i.posthog.com",
+      "https://eu.i.posthog.com",
+      "https://t.microsoftinnovations.club",
+    ].join(" "),
 
     // Network: Vercel, Sentry EU, PostHog (custom proxy + UI host)
     [
