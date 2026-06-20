@@ -8,7 +8,7 @@ The FFCS Planner uses several services that require secret keys and credentials:
 
 - **MongoDB**: Database for storing user data and timetables
 - **Redis**: Shared rate limiting store for API protection
-- **Flagsmith**: Feature flags for safe rollouts and experiments
+- **PostHog**: Feature flags, analytics, and session recording
 - **NextAuth**: Authentication and session management
 - **OAuth Providers**: GitHub and Google login (optional)
 - **Email Service**: For sending notifications (optional)
@@ -84,20 +84,18 @@ UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_rest_token
 
 If these variables are not set, the app falls back to the local in-memory limiter for development.
 
-### 5. Configure Flagsmith Feature Flags
+### 5. Configure PostHog Analytics & Feature Flags
 
-This project uses Flagsmith to gate experimental UI changes safely.
+This project uses PostHog for feature flagging, user analytics, and session replay.
 
-1. Create a Flagsmith project/environment
-2. Copy the environment ID from the Flagsmith dashboard
-3. Add it to `.env.local`
+1. Create a PostHog project
+2. Copy the Project Token and API Host from the PostHog project settings
+3. Add them to `.env.local`
 
 ```env
-NEXT_PUBLIC_FLAGSMITH_ENVIRONMENT_ID=your_flagsmith_environment_id
-NEXT_PUBLIC_FLAGSMITH_API_URL=https://edge.api.flagsmith.com/api/v1
+NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN=your_posthog_project_token
+NEXT_PUBLIC_POSTHOG_HOST=https://your-posthog-host-url
 ```
-
-If you use the hosted Flagsmith API, you can usually omit `NEXT_PUBLIC_FLAGSMITH_API_URL` and rely on the default.
 
 ### 6. Configure OAuth (Optional)
 

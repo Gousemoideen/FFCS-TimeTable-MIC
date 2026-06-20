@@ -104,6 +104,17 @@ Once the feature is fully rolled out:
 - remove the flag from Flagsmith if it is no longer needed
 - keep the app simpler by removing dead fallback paths
 
+## Current Feature Flags
+
+| Flag Key (PostHog) | Code Reference | Description |
+| :--- | :--- | :--- |
+| `faculty_first_preference_flow` | `facultyFirstPreferenceFlow` | Prioritizes faculty preferences first in the onboarding/preference selection flow. |
+| `planner_onboarding_tour` | `plannerOnboardingTour` | Triggers the guided onboarding walkthrough tour on the timetable builder page. |
+| `use_new_course_parser` | `useNewCourseParser` | Configures the course selector to use the updated course syllabus parsing engine. |
+| `school_selection_step` | `schoolSelectionStep` | Toggles the school selection step in the preferences wizard. |
+| `direct_jump_to_courses` | `directJumpToCourses` | Enables a "Skip & Search All Subjects" shortcut button in school selection to jump directly to searching courses. |
+| `course_update_alert` | `courseUpdateAlert` | Informs users with an informational popup alert on timetable builder page load about course database updates status. |
+
 ## Suggested Uses In This App
 
 Good places to use feature flags in this repo:

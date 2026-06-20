@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       {
@@ -9,6 +10,26 @@ const nextConfig: NextConfig = {
         hostname: "lh3.googleusercontent.com",
       },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          // Prevent MIME-type sniffing
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          // Disallow framing (also enforced by frame-ancestors in CSP middleware)
+          { key: "X-Frame-Options", value: "DENY" },
+          // Limit referrer information sent cross-origin
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // Disable access to sensitive browser APIs
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+        ],
+      },
+    ];
   },
 };
 
