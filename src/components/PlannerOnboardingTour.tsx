@@ -43,6 +43,19 @@ export default function PlannerOnboardingTour() {
     const [isComplete, setIsComplete] = useState(true);
     const [serverCompletion, setServerCompletion] = useState<boolean | null>(null);
 
+    const isCourseUpdateAlertEnabled = useFeatureFlagEnabled(FEATURE_FLAGS.courseUpdateAlert) ?? false;
+    const [alertDismissed, setAlertDismissed] = useState(false);
+
+    useEffect(() => {
+        const handleDismiss = () => {
+            setAlertDismissed(true);
+        };
+        window.addEventListener('course_update_alert_dismissed', handleDismiss);
+        return () => {
+            window.removeEventListener('course_update_alert_dismissed', handleDismiss);
+        };
+    }, []);
+
     const steps = useMemo<PlannerTourStep[]>(() => {
         if (!isSchoolSelectionEnabled) {
             return plannerTourSteps;
@@ -153,6 +166,13 @@ export default function PlannerOnboardingTour() {
                 return;
             }
 
+            const isCourseUpdateAlertActive = isCourseUpdateAlertEnabled && (typeof window !== 'undefined' ? localStorage.getItem('course_update_alert_dismissed') !== 'true' : false);
+            if (isCourseUpdateAlertActive) {
+                setRun(false);
+                setIsComplete(true);
+                return;
+            }
+
             const completed = authStatus === 'authenticated' ? serverCompletion : isTourDone();
             if (completed) {
                 setRun(false);
@@ -187,7 +207,7 @@ export default function PlannerOnboardingTour() {
         }, 250);
 
         return () => window.clearTimeout(timer);
-    }, [authStatus, findAllowedStepIndex, finishTour, isEnabled, pathname, persistActiveStep, router, serverCompletion, steps]);
+    }, [authStatus, findAllowedStepIndex, finishTour, isEnabled, pathname, persistActiveStep, router, serverCompletion, steps, isCourseUpdateAlertEnabled, alertDismissed]);
 
     useEffect(() => {
         if (!isEnabled || authStatus !== 'authenticated') {

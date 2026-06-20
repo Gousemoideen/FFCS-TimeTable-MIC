@@ -33,8 +33,8 @@ export function middleware(request: NextRequest) {
     // Fonts: Google Fonts static CDN
     "font-src 'self' https://fonts.gstatic.com",
 
-    // Images: Google OAuth avatars
-    "img-src 'self' data: blob: https://lh3.googleusercontent.com",
+    // Images: Google OAuth avatars + UploadThing CDN
+    "img-src 'self' data: blob: https://lh3.googleusercontent.com https://h8z6stjynz.ufs.sh",
 
     // Media: UploadThing video CDN
     "media-src 'self' https://h8z6stjynz.ufs.sh",

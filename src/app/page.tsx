@@ -271,41 +271,40 @@ export default function LandingPage() {
           {session ? (
             <div className="relative">
               <div
-                className="flex items-center gap-1.5 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity min-w-0"
+                className="flex items-center gap-2.5 cursor-pointer hover:opacity-85 transition-opacity py-1.5 px-3 rounded-full bg-white/70 border border-[#eadcc5]/60 hover:shadow-sm"
                 onClick={() => setShowUserMenu(!showUserMenu)}
               >
-                {session.user?.image && (
-                  <Image src={session.user.image} alt="avatar" width={32} height={32} className="profile-avatar w-8 h-8 rounded-full" referrerPolicy="no-referrer" />
+                {session.user?.image ? (
+                  <Image src={session.user.image} alt="avatar" width={30} height={30} className="w-7.5 h-7.5 rounded-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="w-7.5 h-7.5 rounded-full bg-[#8B6E60] text-white font-bold flex items-center justify-center text-xs shrink-0 select-none">
+                    {parseName(session.user?.name).name[0]?.toUpperCase() || 'U'}
+                  </div>
                 )}
                 <div className="profile-info-container">
-                  <span className="profile-name-text font-semibold text-black">
+                  <span className="profile-name-text font-bold text-gray-900 text-sm">
                     {parseName(session.user?.name).name}
                   </span>
-                  {parseName(session.user?.name).regNo && (
-                    <span className="profile-reg-text">
-                      {parseName(session.user?.name).regNo}
-                    </span>
-                  )}
                 </div>
                 <svg
-                  className={`profile-chevron w-4 h-4 text-black transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`}
+                  className={`w-4 h-4 text-gray-700 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`}
                   viewBox="0 0 20 20"
                   fill="none"
                   aria-hidden="true"
                 >
-                  <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
 
               {showUserMenu && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)}></div>
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-20 py-2 animate-lucid-fade-up">
+                  <div className="absolute right-0 mt-2.5 w-48 bg-white/95 backdrop-blur-md border border-[#eadcc5]/80 rounded-2xl shadow-xl z-20 py-2 animate-in zoom-in-95 duration-200">
                     <button
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 font-bold hover:bg-red-50 transition-colors flex items-center gap-2 cursor-pointer"
+                      className="w-full text-left px-4 py-3 text-sm text-red-600 font-bold hover:bg-red-50/50 transition-colors flex items-center gap-2 cursor-pointer"
                       onClick={handleLogout}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
                       Log out
                     </button>
                   </div>
@@ -313,7 +312,7 @@ export default function LandingPage() {
               )}
             </div>
           ) : (
-            <button className="login-btn" onClick={() => setShowLogin(true)}>Login with Google</button>
+            <button className="login-btn transition-transform hover:scale-[1.03]" onClick={() => setShowLogin(true)}>Login with Google</button>
           )}
         </nav>
         {showLogin && (
