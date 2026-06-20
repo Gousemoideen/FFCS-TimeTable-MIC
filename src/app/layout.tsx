@@ -20,6 +20,9 @@ const bodyFont = Lato({
 });
 export const metadata: Metadata = {
   metadataBase: new URL("https://ffcs.microsoftinnovations.club"),
+  alternates: {
+    canonical: "/",
+  },
   title: "VIT Chennai FFCS Timetable Planner & Schedule Builder | MIC",
   description: "The ultimate VIT Chennai FFCS timetable planner. Generate clash-free schedules, visually map your slots, export your timetable grid, and share it with friends.",
   keywords: [

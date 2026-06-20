@@ -28,5 +28,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: 'always',
             priority: 0.9,
         },
+        {
+            url: `${baseUrl}/slots`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/team`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.6,
+        },
+        {
+            url: `${baseUrl}/feedback`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.3,
+        },
     ];
 }
