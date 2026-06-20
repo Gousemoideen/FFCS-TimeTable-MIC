@@ -244,7 +244,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1,
-    "SLOT": "B1+TB1",
+    "SLOT": "F1+TF1",
     "FACULTY": "ACAD"
   },
   {
@@ -252,7 +252,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1,
-    "SLOT": "B2+TB2",
+    "SLOT": "F2+TF2",
     "FACULTY": "ACAD"
   },
   {
@@ -2452,7 +2452,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B2+TB2",
+    "SLOT": "F2+TF2",
     "FACULTY": "FACE (APT)",
     "VENUE": "AB1-609"
   },
@@ -2461,7 +2461,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B1+TB1",
+    "SLOT": "F1+TF1",
     "FACULTY": "FACE (APT)",
     "VENUE": "AB4-514"
   },
@@ -2470,7 +2470,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B2+TB2",
+    "SLOT": "F2+TF2",
     "FACULTY": "SIXPHRASE(APT)",
     "VENUE": "AB1-301"
   },
@@ -2479,7 +2479,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B1+TB1",
+    "SLOT": "F1+TF1",
     "FACULTY": "FACE (APT)",
     "VENUE": "AB1-608"
   },
@@ -2488,7 +2488,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B1+TB1",
+    "SLOT": "F2+TF2",
     "FACULTY": "SIXPHRASE(APT)",
     "VENUE": "AB1-609"
   },
@@ -2497,7 +2497,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B2+TB2",
+    "SLOT": "F2+TF2",
     "FACULTY": "SIXPHRASE(APT)",
     "VENUE": "AB1-309"
   },
@@ -2506,7 +2506,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B2+TB2",
+    "SLOT": "F2+TF2",
     "FACULTY": "ETHNUS (APT)",
     "VENUE": "AB1-608"
   },
@@ -2515,7 +2515,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B1+TB1",
+    "SLOT": "F1+TF1",
     "FACULTY": "FACE (APT)",
     "VENUE": "AB1-302"
   },
@@ -2524,7 +2524,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B1+TB1",
+    "SLOT": "F1+TF1",
     "FACULTY": "ETHNUS (APT)",
     "VENUE": "AB1-309"
   },
@@ -2560,7 +2560,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B1+TB1",
+    "SLOT": "F1+TF1",
     "FACULTY": "ETHNUS (APT)",
     "VENUE": "AB1-301"
   },
@@ -2569,7 +2569,7 @@ const data = [
     "TITLE": "Qualitative and Quantitative Skills Practice I",
     "TYPE": "SS",
     "CREDITS": 1.5,
-    "SLOT": "B1+TB1",
+    "SLOT": "F1+TF1",
     "FACULTY": "SIXPHRASE(APT)",
     "VENUE": "AB1-308"
   },

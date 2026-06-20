@@ -3,7 +3,7 @@ import { Bricolage_Grotesque, Lato } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "@/components/Providers";
-// import { headers } from "next/headers";
+import { headers } from "next/headers";
 // // import MobileGuard from "@/components/MobileGuard";
 import "./globals.css";
 
@@ -60,12 +60,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   return (
     <html lang="en">
@@ -74,9 +74,9 @@ export default function RootLayout({
       >
         <Providers>
           {/* <MobileGuard> */}
-          {/* <main> */}
+          <main>
             {children}
-          {/* </main> */}
+          </main>
           {/* </MobileGuard> */}
           <Analytics />
           <SpeedInsights />
