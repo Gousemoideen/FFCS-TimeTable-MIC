@@ -143,6 +143,15 @@ const TEAM_MEMBERS: TeamMember[] = [
     photo: "https://h8z6stjynz.ufs.sh/f/nEev6VX4XfKEWcJRaQxWChfmZ1kq57BVItpdrGLNHsS8TugD",
     github: "https://github.com/AkashVishnu-P",
     linkedin: "https://www.linkedin.com/in/akashvishnu-p/"
+  },
+  {
+    name: "Sravan Kowsik Gonuguntla",
+    role: "UI/UX Lead",
+    category: "design",
+    tagline: "Designed FFCS Mobile Fallback, Landing, Subject Dashboard, and Saved Timetables pages.",
+    gradient: "from-[#FFDEEB] to-[#E64980]",
+    github: "https://github.com/sravannotshravan",
+    linkedin: "https://www.linkedin.com/in/sravan-kowsik-gonuguntla-555341292/"
   }
 ];
 
