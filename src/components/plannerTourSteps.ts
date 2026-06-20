@@ -14,7 +14,7 @@ export type PlannerTourStep = Step & {
     preferenceStep?: number;
 };
 
-const setPreferenceStep = async (step: number) => {
+export const setPreferenceStep = async (step: number) => {
     if (typeof window === 'undefined') return;
 
     window.dispatchEvent(new CustomEvent(PREFERENCE_TOUR_STEP_EVENT, { detail: { step } }));

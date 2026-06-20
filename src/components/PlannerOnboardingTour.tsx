@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useFlags } from '@flagsmith/flagsmith/react';
+import { useFeatureFlagEnabled } from '@posthog/react';
 import { useSession } from 'next-auth/react';
 import { ACTIONS, EVENTS, Joyride, STATUS, type EventData, type Step } from 'react-joyride';
 import { FEATURE_FLAGS } from '@/lib/featureFlags';
@@ -10,6 +10,7 @@ import {
     PLANNER_TOUR_SESSION_KEY,
     PLANNER_TOUR_STORAGE_KEY,
     plannerTourSteps,
+    setPreferenceStep,
     type PlannerTourStep,
 } from '@/components/plannerTourSteps';
 
@@ -32,15 +33,37 @@ export default function PlannerOnboardingTour() {
     const router = useRouter();
     const pathname = usePathname();
     const { status: authStatus } = useSession();
-    const flags = useFlags([FEATURE_FLAGS.plannerOnboardingTour]);
-    const isEnabled = Boolean(flags[FEATURE_FLAGS.plannerOnboardingTour]?.enabled);
+    const isEnabled = useFeatureFlagEnabled(FEATURE_FLAGS.plannerOnboardingTour) ?? false;
+
+    const isSchoolSelectionEnabled = useFeatureFlagEnabled(FEATURE_FLAGS.schoolSelectionStep) ?? false;
+    const isDirectJumpEnabled = useFeatureFlagEnabled(FEATURE_FLAGS.directJumpToCourses) ?? false;
 
     const [run, setRun] = useState(false);
     const [stepIndex, setStepIndex] = useState(0);
     const [isComplete, setIsComplete] = useState(true);
     const [serverCompletion, setServerCompletion] = useState<boolean | null>(null);
 
-    const steps = useMemo<PlannerTourStep[]>(() => plannerTourSteps, []);
+    const steps = useMemo<PlannerTourStep[]>(() => {
+        if (!isSchoolSelectionEnabled) {
+            return plannerTourSteps;
+        }
+
+        const schoolStep: PlannerTourStep = {
+            route: '/preferences',
+            target: '[data-tour="preferences-step-school"]',
+            title: 'Select School',
+            content: isDirectJumpEnabled
+                ? 'Select your school (e.g. SCOPE, SENSE) to filter courses by department, or use the "Skip & Search All Subjects" button to view the entire catalog directly.'
+                : 'Select your academic school to view and filter courses related to your department.',
+            placement: 'right',
+            preferenceStep: 0,
+            before: () => setPreferenceStep(0),
+        };
+
+        const newSteps = [...plannerTourSteps];
+        newSteps.splice(1, 0, schoolStep);
+        return newSteps;
+    }, [isSchoolSelectionEnabled, isDirectJumpEnabled]);
     const currentStep = steps[stepIndex];
     const isStepAllowed = useCallback((step: PlannerTourStep) => {
         if (!step.auth) return true;
