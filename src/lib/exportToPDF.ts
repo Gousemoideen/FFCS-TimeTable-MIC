@@ -137,21 +137,22 @@ export const exportToPDF = async (
 
             buildPdfFromImage(canvas.toDataURL('image/png'), canvas.width, canvas.height);
         } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            if (!message.includes('unsupported color function')) {
-                throw error;
+            console.warn('html2canvas failed, falling back to html-to-image:', error);
+            try {
+                const imgData = await toPng(element, {
+                    backgroundColor: '#FFFBF0',
+                    cacheBust: true,
+                    pixelRatio: 3,
+                    canvasWidth: element.scrollWidth,
+                    canvasHeight: element.scrollHeight,
+                    skipAutoScale: true,
+                });
+
+                buildPdfFromImage(imgData, element.scrollWidth * 3, element.scrollHeight * 3);
+            } catch (fallbackError) {
+                console.error('Fallback PDF export failed:', fallbackError);
+                throw error; // Throw the original html2canvas error for better debugging logs
             }
-
-            const imgData = await toPng(element, {
-                backgroundColor: '#FFFBF0',
-                cacheBust: true,
-                pixelRatio: 3,
-                canvasWidth: element.scrollWidth,
-                canvasHeight: element.scrollHeight,
-                skipAutoScale: true,
-            });
-
-            buildPdfFromImage(imgData, element.scrollWidth * 3, element.scrollHeight * 3);
         }
     } catch (error: unknown) {
         console.error('Error generating PDF:', error);
