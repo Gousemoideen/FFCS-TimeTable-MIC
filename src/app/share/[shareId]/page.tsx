@@ -13,7 +13,10 @@ type SharedSlot = {
     facultyName: string;
 };
 
-const SLOT_COLORS = ['#C8F7DC', '#E0D4F5', '#FFF3B0', '#FFD6E0', '#BDD7FF', '#B8F0E0'];
+const THEORY_FILLED_COLOR = '#BFF0C8';
+const THEORY_EMPTY_COLOR = '#E1F9E9';
+const LAB_FILLED_COLOR = '#FFE78A';
+const LAB_EMPTY_COLOR = '#FFF2BF';
 
 type SlotCategory = 'theory' | 'lab';
 
@@ -23,12 +26,6 @@ type HighlightedCell = {
     courseCode: string;
     backgroundColor: string;
 };
-
-function getSlotColor(code: string, allCodes: string[]) {
-    const unique = [...new Set(allCodes)];
-    const idx = unique.indexOf(code);
-    return SLOT_COLORS[idx % SLOT_COLORS.length];
-}
 
 function getSlotTokens(slotName: string) {
     return slotName
@@ -84,7 +81,7 @@ export default function SharePage() {
             .finally(() => setLoading(false));
     }, [shareId]);
 
-    const allCodes = timetable.map(s => s.courseCode);
+
 
     const theoryGrid: (SharedSlot | null)[][] = Array.from({ length: 5 }, () => Array(13).fill(null));
     const labGrid: (SharedSlot | null)[][] = Array.from({ length: 5 }, () => Array(13).fill(null));
@@ -227,8 +224,8 @@ export default function SharePage() {
                                         
                                         const theoryCell = theoryGrid[rowIdx][colIdx];
                                         const labCell = labGrid[rowIdx][colIdx];
-                                        const theoryBackgroundColor = theoryCell ? getSlotColor(theoryCell.courseCode, allCodes) : '#e6f9ed';
-                                        const labBackgroundColor = labCell ? getSlotColor(labCell.courseCode, allCodes) : '#fff6e0';
+                                        const theoryBackgroundColor = theoryCell ? THEORY_FILLED_COLOR : THEORY_EMPTY_COLOR;
+                                        const labBackgroundColor = labCell ? LAB_FILLED_COLOR : LAB_EMPTY_COLOR;
 
                                         let theoryLabel = '';
                                         let labLabel = '';
@@ -321,8 +318,8 @@ export default function SharePage() {
                             width: '335px',
                             height: '312px',
                             maxWidth: '92vw',
-                            backgroundColor: selectedSlotCategory === 'theory' ? '#CFF3D5' : '#E8D7FF',
-                            borderColor: selectedSlotCategory === 'theory' ? '#6AA874' : '#8B6FB8',
+                            backgroundColor: selectedSlotCategory === 'theory' ? '#CFF3D5' : '#FFF0A6',
+                            borderColor: selectedSlotCategory === 'theory' ? '#6AA874' : '#D6B13D',
                         }}
                         onClick={e => e.stopPropagation()}
                     >
