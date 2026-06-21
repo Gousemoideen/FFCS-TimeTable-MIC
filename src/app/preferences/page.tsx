@@ -72,12 +72,18 @@ const keepFirst = (arr: string[]): string[] => (arr.length > 0 ? [arr[0]] : []);
 const SCHOOLS = ['SCOPE', 'SENSE', 'SELECT', 'SMEC', 'SCHEME', 'SCORE', 'SBST', 'SCE', 'SHINE', 'SSL', 'SAS', 'VBS'];
 
 const SCHOOL_TO_DOMAINS: Record<string, string[]> = {
-    SCOPE: ['BACSE', 'BCSE'],
-    SENSE: ['BECE', 'BAECE'],
-    SELECT: ['BAEEE', 'BEEE'],
-    SAS: ['BAMAT', 'BABIT', 'BMAT'],
-    SSL: ['BASTS', 'BSTS', 'STS', 'BAHUM', 'BAESP', 'BAFRE', 'BAGER', 'BAJAP', 'BHSM'],
-    SCE: ['BACLE'],
+    SCOPE: ['BACSE', 'BCSE', 'CSE', 'IACSE', 'IACSI', 'IASWE', 'ISWE', 'MACSE', 'PAMCA', 'UACSA', 'UCSC', 'SWE'],
+    SENSE: ['BECE', 'BAECE', 'BAEVD', 'BEVD', 'BECM', 'BECS', 'MAELM'],
+    SELECT: ['BAEEE', 'BEEE', 'EEE'],
+    SMEC: ['BAMEE', 'BMEE', 'BMHA', 'MMHA'],
+    SCHEME: ['BSSC', 'ISSC', 'USSC'],
+    SCORE: ['BACSE', 'BCSE', 'CSE', 'IACSE', 'IACSI', 'IASWE', 'ISWE', 'MACSE', 'PAMCA', 'UACSA', 'UCSC', 'SWE'],
+    SBST: ['BABIT', 'BBIT'],
+    SCE: ['BACLE', 'BCLE', 'ICLE'],
+    SHINE: ['BAFST', 'BFST', 'BAMGT', 'BMGT', 'IMGT', 'UMGT', 'MGT', 'BABMH', 'FSD', 'IBSA', 'MCDM', 'PMDS', 'TAPS', 'UENG', 'TLAW'],
+    SSL: ['BASTS', 'BSTS', 'STS', 'BAHUM', 'BAESP', 'BAFRE', 'BAGER', 'BAJAP', 'BHSM', 'IASTS', 'USTS', 'BHUM', 'IAHUM', 'IHUM', 'UHUM', 'UECH'],
+    SAS: ['BAMAT', 'BABIT', 'BMAT', 'BACHY', 'BCHY', 'IACHY', 'ICHY', 'TCHY', 'PCHY', 'PPHY', 'IAMAT', 'IMAT', 'UMAT'],
+    VBS: ['BAMGT', 'BMGT', 'IMGT', 'UMGT', 'MGT', 'BABMH', 'IBSA', 'TLAW'],
 };
 
 const STEP_COLORS_PALETTE = ['#9bc0f6', '#eedaff', '#d1fae5', '#9bc0f6', '#eedaff', '#d1fae5'];
@@ -155,10 +161,22 @@ export default function PreferencesPage() {
     const [isSkippedToSubjects, setIsSkippedToSubjects] = useState(false);
     const [subjectSearchQuery, setSubjectSearchQuery] = useState('');
     const isFacultyFirstMode = isFacultyFirstToggleAvailable && isFacultyFirstModeEnabled;
-    const [pairingToast, setPairingToast] = useState<{ title: string; description: string } | null>(null);
+    const [pairingToast, setPairingToast] = useState<{
+        title: string;
+        description: string;
+        theorySlot?: string;
+        labSlot?: string;
+        facultyName?: string;
+    } | null>(null);
 
-    const showPairingToast = React.useCallback((title: string, description: string) => {
-        setPairingToast({ title, description });
+    const showPairingToast = React.useCallback((
+        title: string,
+        description: string,
+        theorySlot?: string,
+        labSlot?: string,
+        facultyName?: string
+    ) => {
+        setPairingToast({ title, description, theorySlot, labSlot, facultyName });
     }, []);
 
     useEffect(() => {
@@ -833,7 +851,17 @@ export default function PreferencesPage() {
                         const description = pairings.length === 1
                             ? `Theory slot ${first.theorySlot} matched with Lab slot ${first.labSlot} for ${first.facultyName}.`
                             : `Matched ${pairings.length} theory/lab slots session-wise for selected faculties.`;
-                        showPairingToast("Slots Paired Successfully", description);
+                        if (pairings.length === 1) {
+                            showPairingToast(
+                                "Slots Paired Successfully",
+                                description,
+                                first.theorySlot,
+                                first.labSlot,
+                                first.facultyName
+                            );
+                        } else {
+                            showPairingToast("Slots Paired Successfully", description);
+                        }
                     }
                 }
             }
@@ -1551,22 +1579,75 @@ export default function PreferencesPage() {
         )}
 
             {pairingToast && (
-                <div className="fixed bottom-6 right-6 z-50 flex w-full max-w-[420px] animate-[slideUp_0.25s_ease-out] flex-col gap-1 rounded-xl border border-gray-100 bg-white p-4 shadow-xl pointer-events-auto">
-                    <div className="flex items-start justify-between gap-2">
-                        <div className="flex gap-2.5">
-                            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                <div 
+                    className="fixed bottom-6 right-6 z-50 flex animate-[slideUp_0.25s_ease-out] flex-col rounded-xl border bg-white shadow-xl pointer-events-auto"
+                    style={{
+                        position: 'fixed',
+                        bottom: '24px',
+                        right: '24px',
+                        zIndex: 9999,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: 'calc(100% - 48px)',
+                        maxWidth: '420px',
+                        backgroundColor: '#ffffff',
+                        padding: '16px',
+                        borderRadius: '12px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        border: '1px solid #e2e8f0',
+                        fontFamily: 'Inter, system-ui, sans-serif'
+                    }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', width: '100%' }}>
+                        <div style={{ display: 'flex', gap: '12px', flex: 1 }}>
+                            <span style={{
+                                marginTop: '2px',
+                                display: 'flex',
+                                height: '20px',
+                                width: '20px',
+                                flexShrink: 0,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '9999px',
+                                backgroundColor: '#ecfdf5',
+                                color: '#059669'
+                            }}>
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             </span>
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-900 leading-tight">{pairingToast.title}</h3>
-                                <p className="text-xs text-gray-500 leading-normal mt-0.5">{pairingToast.description}</p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
+                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a', lineHeight: '1.25' }}>
+                                    Slots Paired Successfully
+                                </h3>
+                                <p style={{ margin: 0, fontSize: '12px', color: '#475569', lineHeight: '1.4', marginTop: '2px' }}>
+                                    {pairingToast.theorySlot && pairingToast.labSlot && pairingToast.facultyName ? (
+                                        <>
+                                            Theory slot <strong>{pairingToast.theorySlot}</strong> matched with Lab slot <strong>{pairingToast.labSlot}</strong> for <strong>{pairingToast.facultyName}</strong>.
+                                        </>
+                                    ) : (
+                                        pairingToast.description
+                                    )}
+                                </p>
                             </div>
                         </div>
                         <button 
                             onClick={() => setPairingToast(null)}
-                            className="text-gray-400 hover:text-gray-600 rounded-lg p-1 transition-colors"
+                            style={{
+                                color: '#94a3b8',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                marginLeft: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '6px',
+                                transition: 'color 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#475569'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
