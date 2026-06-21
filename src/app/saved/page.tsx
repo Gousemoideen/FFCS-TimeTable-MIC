@@ -439,7 +439,7 @@ export default function SavedPage() {
                             ) : (
                                 <div className="cards-scroller-wrapper">
                                     {/* White background wrapping cards + arrows */}
-                                    <div className="white-cards-outer">
+                                    <div className="white-cards-outer relative">
                                         <div ref={scrollRef} className={`white-cards-box ${canScrollTimetables ? '' : 'hide-scrollbar'}`}>
                                             {displayTimetables.map((tt, i) => (
                                                 <TimetableCard
@@ -465,16 +465,16 @@ export default function SavedPage() {
                                             ))}
                                         </div>
 
-                                        {/* Scroll arrows inside white background */}
+                                        {/* Scroll arrows overlay */}
                                         {canScrollTimetables && (
-                                            <div className="arrows-row">
-                                                <button onClick={scrollLeft} className="arrow-btn">
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
+                                            <>
+                                                <button onClick={scrollLeft} className="arrow-btn-absolute absolute-left" aria-label="Scroll left">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
                                                 </button>
-                                                <button onClick={scrollRight} className="arrow-btn">
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" strokeWidth="2.5"><path d="M9 18l6-6-6-6" /></svg>
+                                                <button onClick={scrollRight} className="arrow-btn-absolute absolute-right" aria-label="Scroll right">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" strokeWidth="2.5"><path d="M9 18l6-6-6-6" /></svg>
                                                 </button>
-                                            </div>
+                                            </>
                                         )}
                                     </div>
                                 </div>

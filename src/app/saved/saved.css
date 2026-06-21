@@ -188,7 +188,8 @@
   flex: 1;
   min-height: 0;
   min-width: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   justify-content: flex-start;
 }
 
@@ -213,7 +214,7 @@
   overflow-y: hidden;
   scroll-behavior: smooth;
   scroll-snap-type: x proximity;
-  padding: 10px 4px 10px;
+  padding: 10px 4px 16px;
   flex: 0 0 auto;
   min-height: 390px;
   scrollbar-gutter: stable;
@@ -248,33 +249,41 @@
 }
 
 /* ── Scroll arrows ── */
-.arrows-row {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  gap: 12px;
-  padding: 2px 2px 0;
-  flex-shrink: 0;
-}
-
-.arrow-btn {
-  width: 54px;
-  height: 42px;
-  border-radius: 8px;
-  background: #a7c2ef;
+.arrow-btn-absolute {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-  flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(165, 190, 236, 0.24);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  z-index: 20;
 }
 
-.arrow-btn:hover {
-  background: #96b8ee;
-  transform: translateY(-1px);
+.arrow-btn-absolute:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+}
+
+.arrow-btn-absolute:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.absolute-left {
+  left: -20px;
+}
+
+.absolute-right {
+  right: -20px;
 }
 
 /* ── Bottom nav bar ── */

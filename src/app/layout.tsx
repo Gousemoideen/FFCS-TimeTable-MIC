@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Lato } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "@/components/Providers";
+import MaintenanceGuard from "@/components/MaintenanceGuard";
 import { headers } from "next/headers";
 // // import MobileGuard from "@/components/MobileGuard";
 import "./globals.css";
@@ -76,11 +77,13 @@ export default async function RootLayout({
          className={`${headingFont.variable} ${bodyFont.variable} antialiased`}
       >
         <Providers>
-          {/* <MobileGuard> */}
-          <main>
-            {children}
-          </main>
-          {/* </MobileGuard> */}
+          <MaintenanceGuard>
+            {/* <MobileGuard> */}
+            <main>
+              {children}
+            </main>
+            {/* </MobileGuard> */}
+          </MaintenanceGuard>
           <Analytics />
           <SpeedInsights />
         </Providers>

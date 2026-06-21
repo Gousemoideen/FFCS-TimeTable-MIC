@@ -473,6 +473,51 @@ const data = [
     "CREDITS": 3,
     "SLOT": "G1+TG1",
     "FACULTY": "NITHYA DARISINI  P S"
+  },
+  {
+    "CODE": "BAECE205",
+    "TITLE": "Control Systems",
+    "TYPE": "Theory Only",
+    "CREDITS": 4,
+    "SLOT": "C1+TC1+TCC1",
+    "FACULTY": "Niraj Kumar",
+    "VENUE": "AB1-308"
+  },
+  {
+    "CODE": "BAECE201",
+    "TITLE": "Probability Theory and Random Processes",
+    "TYPE": "Theory Only",
+    "CREDITS": 4,
+    "SLOT": "D1+TD1+TDD1",
+    "FACULTY": "SANKAR GANESH",
+    "VENUE": "AB1-302"
+  },
+  {
+    "CODE": "BAEVD204",
+    "TITLE": "Signal Processing",
+    "TYPE": "Embedded Theory",
+    "CREDITS": 2,
+    "SLOT": "A2+TA2",
+    "FACULTY": "Pranaba Kumar Mishro",
+    "VENUE": "AB4-514"
+  },
+  {
+    "CODE": "BAEVD203",
+    "TITLE": "Communication Systems",
+    "TYPE": "Theory Only",
+    "CREDITS": 4,
+    "SLOT": "D2+TD2+TDD2",
+    "FACULTY": "Amit Kumar",
+    "VENUE": "AB4-514"
+  },
+  {
+    "CODE": "BAEVD201",
+    "TITLE": "Electronic Circuits",
+    "TYPE": "Embedded Theory",
+    "CREDITS": 2,
+    "SLOT": "G2+TG2",
+    "FACULTY": "Manikandan P",
+    "VENUE": "AB4-514"
   }
 ] as const;
 

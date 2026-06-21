@@ -475,8 +475,12 @@ export default function LandingPage() {
                 a: "Our FFCS planner helps you make informed decisions before registering for courses. Plan ahead, avoid schedule conflicts, and save time during the actual FFCS registration process. It's designed specifically for VIT's course system."
               },
               {
-                q: "Will it help me with my\nFFCS?",
-                a: "Yes, it helps you organize and plan your timetable seamlessly before the actual FFCS process begins."
+                q: "Can I generate multiple\ntimetable options?",
+                a: "Yes! Simply add multiple teachers for a single subject, and our smart algorithm will automatically generate several clash-free timetable combinations for you."
+              },
+              {
+                q: "Does it automatically handle\nTheory and Lab pairings?",
+                a: "Absolutely! When you select a theory slot for a course, the corresponding lab slot is automatically selected for you (and vice-versa), ensuring perfect synchronization."
               },
               {
                 q: "Do I need to be a VIT student to use\nthis site?",

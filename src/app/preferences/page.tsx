@@ -971,7 +971,7 @@ export default function PreferencesPage() {
                                                     {selectionError}
                                                 </div>
                                             )}
-                                            {/* Step: School Selection */}
+                                            {/* Step 1: School Selection */}
                                             {stepKey === 'school' && (
                                                 <div style={{ display: 'grid', gap: '10px' }}>
                                                     <p className="text-xs font-semibold uppercase tracking-wide text-gray-700 mb-1">
@@ -989,9 +989,9 @@ export default function PreferencesPage() {
                                                                 setSelectedFaculties([]);
                                                                 setCurrentStep(stepKeys.indexOf('subject') + 1);
                                                             }}
-                                                            className="w-full p-3 lg:p-4 mb-1 rounded-lg text-center font-bold text-white bg-gradient-to-r from-[#4C6EF5] to-[#3B5BDB] border border-[#3B5BDB]/20 hover:from-[#5C7CFA] hover:to-[#4C6EF5] shadow-lg shadow-[#3B5BDB]/25 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3B5BDB] cursor-pointer"
+                                                            className="w-full p-3 lg:p-4 mb-1 rounded-lg text-center font-bold text-white  border border-[#3B5BDB]/20 shadow-lg shadow-[#3B5BDB]/25 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3B5BDB] cursor-pointer"
                                                         >
-                                                            🔍 Skip & Search All Subjects
+                                                            Skip & Search All Subjects
                                                         </button>
                                                     )}
                                                     {SCHOOLS.map(school => (
@@ -1010,7 +1010,7 @@ export default function PreferencesPage() {
                                                 </div>
                                             )}
 
-                                            {/* Step: Domain Selection */}
+                                            {/* Step 2: Domain Selection */}
                                             {stepKey === 'domain' && (
                                                 <div style={{ display: 'grid', gap: '10px' }}>
                                                     <p className="text-xs font-semibold uppercase tracking-wide text-gray-700 mb-1">
@@ -1070,7 +1070,7 @@ export default function PreferencesPage() {
                                                 </div>
                                             )}
 
-                                            {/* Step: Slot Selection */}
+                                            {/* Step 4: Slot Selection */}
                                             {stepKey === 'slot' && (
                                                 <div style={{ display: 'grid', gap: '10px' }}>
                                                     <p className="text-xs font-semibold uppercase tracking-wide text-gray-700 mb-1">
@@ -1098,7 +1098,7 @@ export default function PreferencesPage() {
                                                 </div>
                                             )}
 
-                                            {/* Step: Faculty Selection */}
+                                            {/* Step 5: Faculty Selection */}
                                             {stepKey === 'faculty' && (
                                                 <div style={{ display: 'grid', gap: '10px' }}>
                                                     <p className={`text-xs font-semibold uppercase tracking-wide text-gray-700 mb-1 ${selectionError ? 'mt-1' : ''}`}>
@@ -1124,7 +1124,7 @@ export default function PreferencesPage() {
                                                 </div>
                                             )}
 
-                                            {/* Step: Faculty Priority */}
+                                            {/* Step 6: Faculty Priority */}
                                             {stepKey === 'priority' && (
                                                 <div className="flex flex-col h-full">
                                                     <p className="text-gray-800 font-medium mb-3">
