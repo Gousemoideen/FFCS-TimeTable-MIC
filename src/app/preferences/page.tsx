@@ -71,21 +71,6 @@ const keepFirst = (arr: string[]): string[] => (arr.length > 0 ? [arr[0]] : []);
 
 const SCHOOLS = ['SCOPE', 'SENSE', 'SELECT', 'SMEC', 'SCE', 'SBST', 'SAS', 'SSL', 'VITBS', 'VITSOL', 'VFIT', 'V-SMART'];
 
-const SCHOOL_NAMES: Record<string, string> = {
-    SCOPE: 'School of Computer Science and Engineering (SCOPE)',
-    SENSE: 'School of Electronics Engineering (SENSE)',
-    SELECT: 'School of Electrical Engineering (SELECT)',
-    SMEC: 'School of Mechanical Engineering (SMEC)',
-    SCE: 'School of Civil Engineering (SCE)',
-    SBST: 'School of Bio Sciences and Technology (SBST)',
-    SAS: 'School of Advanced Sciences (SAS)',
-    SSL: 'School of Social Sciences and Languages (SSL)',
-    VITBS: 'VIT Business School (VITBS)',
-    VITSOL: 'VIT School of Law (VITSOL)',
-    VFIT: 'VIT Fashion Institute of Technology (VFIT)',
-    'V-SMART': 'VIT School of Media Arts and Technology (V-SMART)',
-};
-
 const SCHOOL_TO_DOMAINS: Record<string, string[]> = {
     SCOPE: ['BACSE', 'BCSE', 'CSE', 'IACSE', 'IACSI', 'IASWE', 'ISWE', 'MACSE', 'PAMCA', 'UACSA', 'UCSC', 'SWE'],
     SENSE: ['BECE', 'BAECE', 'BAEVD', 'BEVD', 'BECM', 'BECS', 'MAELM'],
@@ -1150,7 +1135,7 @@ export default function PreferencesPage() {
                                                                 : selectionButtonUnselectedClass
                                                                 }`}
                                                         >
-                                                            {SCHOOL_NAMES[school] || school}
+                                                            {school}
                                                         </button>
                                                     ))}
                                                 </div>
