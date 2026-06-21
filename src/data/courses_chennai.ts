@@ -518,6 +518,94 @@ const data = [
     "SLOT": "G2+TG2",
     "FACULTY": "Manikandan P",
     "VENUE": "AB4-514"
+  },
+  {
+    "CODE": "BCSE316L",
+    "TITLE": "Design of Smart cities",
+    "TYPE": "Theory Only",
+    "CREDITS": 3,
+    "SLOT": "F1+TF1",
+    "FACULTY": "SUSEELA S"
+  },
+  {
+    "CODE": "BCSE409L",
+    "TITLE": "Natural Language Processing",
+    "TYPE": "Theory Only",
+    "CREDITS": 3,
+    "SLOT": "F1+TF1",
+    "FACULTY": "KRITHIGA R"
+  },
+  {
+    "CODE": "BCSE410L",
+    "TITLE": "Cyber Security",
+    "TYPE": "Theory Only",
+    "CREDITS": 3,
+    "SLOT": "F1+TF1",
+    "FACULTY": "JAYASUDHA M"
+  },
+  {
+    "CODE": "BHSM200L",
+    "TITLE": "HSM Elective",
+    "TYPE": "Theory Only",
+    "CREDITS": 3,
+    "SLOT": "F1+TF1, F2+TF2",
+    "FACULTY": ""
+  },
+  {
+    "CODE": "BMAT205L",
+    "TITLE": "Discrete Mathematics and Graph Theory",
+    "TYPE": "Theory Only",
+    "CREDITS": 3,
+    "SLOT": "C1+TC1+TCC1, C2+TC2+TCC2",
+    "FACULTY": ""
+  },
+  {
+    "CODE": "BCSE204L/P",
+    "TITLE": "Design and Analysis of Algorithm",
+    "TYPE": "Lab Only",
+    "CREDITS": 3,
+    "SLOT": "A1+TA1",
+    "FACULTY": "KALAIPRIYAN"
+  },
+  {
+    "CODE": "BCSE302L/P",
+    "TITLE": "Database Systems",
+    "TYPE": "Lab Only",
+    "CREDITS": 3,
+    "SLOT": "A1+TA1",
+    "FACULTY": "ROLLA SUBRAHMANYAM"
+  },
+  {
+    "CODE": "BCSE301L/P",
+    "TITLE": "Software Engineering",
+    "TYPE": "Lab Only",
+    "CREDITS": 3,
+    "SLOT": "B1+TB1",
+    "FACULTY": "KAVITHA"
+  },
+  {
+    "CODE": "BCSE307L/P",
+    "TITLE": "Compiler Design",
+    "TYPE": "Lab Only",
+    "CREDITS": 3,
+    "SLOT": "B1+TB1",
+    "FACULTY": "RATHNA"
+  },
+  {
+    "CODE": "BCSE305L",
+    "TITLE": "Embedded Systems",
+    "TYPE": "Theory Only",
+    "CREDITS": 3,
+    "SLOT": "D1+TD1",
+    "FACULTY": ""
+  },
+  {
+    "CODE": "BCSE355L",
+    "TITLE": "Cloud Architecture Design",
+    "TYPE": "Theory Only",
+    "CREDITS": 3,
+    "SLOT": "E1+TE1",
+    "FACULTY": "SELLAM V"
   }
 ] as const;
 
