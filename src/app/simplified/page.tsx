@@ -1367,12 +1367,12 @@ export default function CourseSelectionPage() {
                             </div>
                         ) : (
                             <div className="p-1.5 h-full">
-                                <table className="w-full table-fixed border-collapse bg-white text-center min-w-[700px] text-xs h-full min-h-[420px]">
+                                <table className="w-full table-fixed border-collapse bg-white text-center min-w-[840px] text-xs h-full min-h-[420px]">
                                     <thead>
                                         <tr className="border-b-2 border-white h-10">
-                                            <th className="text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] w-14 md:w-16 p-0.5 text-[10px] md:text-[11px] leading-tight">Theory Hours</th>
+                                            <th className="text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] w-16 md:w-20 p-0.5 text-[10px] md:text-[11px] leading-tight">Theory Hours</th>
                                             {[...leftTimes, { theory: '', lab: '' }, ...rightTimes].map((t, i) => (
-                                                <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] ${i === 6 ? 'w-6 px-0' : 'p-0.5 text-[10px] md:text-[11px] leading-tight'}`}>
+                                                <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] ${i === 6 ? 'w-8 px-0' : 'p-0.5 text-[10px] md:text-[11px] leading-tight'}`}>
                                                     {t.theory ? t.theory.split('-').map((part, idx, arr) => (
                                                         <span key={idx} className="block whitespace-nowrap">{part}{idx < arr.length - 1 ? '-' : ''}</span>
                                                     )) : null}
@@ -1380,9 +1380,9 @@ export default function CourseSelectionPage() {
                                             ))}
                                         </tr>
                                         <tr className="border-b-2 border-white h-10">
-                                            <th className="text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] w-14 md:w-16 p-0.5 text-[10px] md:text-[11px] leading-tight">Lab Hours</th>
+                                            <th className="text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] w-16 md:w-20 p-0.5 text-[10px] md:text-[11px] leading-tight">Lab Hours</th>
                                             {[...leftTimes, { theory: '', lab: '' }, ...rightTimes].map((t, i) => (
-                                                <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] ${i === 6 ? 'w-6 px-0' : 'p-0.5 text-[10px] md:text-[11px] leading-tight'}`}>
+                                                <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] ${i === 6 ? 'w-8 px-0' : 'p-0.5 text-[10px] md:text-[11px] leading-tight'}`}>
                                                     {t.lab ? t.lab.split('-').map((part, idx, arr) => (
                                                         <span key={idx} className="block whitespace-nowrap">{part}{idx < arr.length - 1 ? '-' : ''}</span>
                                                     )) : null}
@@ -1393,12 +1393,12 @@ export default function CourseSelectionPage() {
                                     <tbody className="bg-white">
                                         {scheduleRows.map((row, rowIdx) => (
                                             <tr key={row.day} className="h-20">
-                                                <td className="text-black text-center align-middle border-r-2 border-white bg-[#FAFAFA] font-bold w-14 md:w-16 p-0 text-[10.5px]">{row.day}</td>
+                                                <td className="text-black text-center align-middle border-r-2 border-white bg-[#FAFAFA] font-bold w-16 md:w-20 p-0 text-[10.5px]">{row.day}</td>
                                                 {Array.from({ length: 13 }).map((_, colIdx) => {
                                                     if (colIdx === 6) {
                                                         const lunchLetters = ['L', 'U', 'N', 'C', 'H'];
                                                         return (
-                                                            <td key="lunch-spacer" className="border-r-2 border-white align-middle bg-[#f8f9fa] w-6 p-0">
+                                                            <td key="lunch-spacer" className="border-r-2 border-white align-middle bg-[#f8f9fa] w-8 p-0">
                                                                 <div className="flex h-full flex-col items-center justify-center">
                                                                     <span className="font-black text-black opacity-80 text-[10.5px]">
                                                                         {lunchLetters[rowIdx]}
