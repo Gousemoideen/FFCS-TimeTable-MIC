@@ -160,6 +160,12 @@ export default function PreferencesPage() {
     const [isHelpOpen, setIsHelpOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [selectionError, setSelectionError] = useState('');
+    const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
+
+    const navigateWithLoader = (path: string, label: string) => {
+        setNavigatingTo(label);
+        setTimeout(() => router.push(path), 250);
+    };
     const [isSkippedToSubjects, setIsSkippedToSubjects] = useState(false);
     const [subjectSearchQuery, setSubjectSearchQuery] = useState('');
     const [skipToast, setSkipToast] = useState(false);
@@ -1036,6 +1042,16 @@ export default function PreferencesPage() {
 
     return (
         <>
+        {/* Navigation Loader Overlay */}
+        {navigatingTo && (
+            <div className="fixed inset-0 z-[9999] bg-[#F5E6D3]/80 backdrop-blur-sm flex flex-col items-center justify-center gap-5">
+                <div className="relative w-14 h-14">
+                    <div className="absolute inset-0 rounded-full border-4 border-[#eadcc5]/50" />
+                    <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-emerald-500" style={{ animation: 'spin 0.8s linear infinite' }} />
+                </div>
+                <span className="text-sm font-bold text-gray-600 tracking-wide">{navigatingTo}</span>
+            </div>
+        )}
         <div className={`h-screen bg-[#F5E6D3] font-sans overflow-hidden transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
             <div className="h-full px-[clamp(12px,1.5vw,24px)] pt-[clamp(10px,1vh,18px)] pb-29">
                 <div className="w-full max-w-450 h-full mx-auto flex flex-col min-h-0">
@@ -1052,7 +1068,7 @@ export default function PreferencesPage() {
                                     <button
                                         type="button"
                                         role="switch"
-                                        onClick={() => router.push('/simplified')}
+                                        onClick={() => navigateWithLoader('/simplified', 'Switching to Course Selection Mode...')}
                                         aria-checked={false}
                                         aria-label="Toggle course selection mode"
                                         className="relative h-7 w-12 rounded-full shadow-inner transition-colors bg-gray-300 focus:outline-none cursor-pointer"

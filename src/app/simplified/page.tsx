@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import posthog from 'posthog-js';
 import { useFeatureFlagEnabled } from '@posthog/react';
 
@@ -11,7 +11,9 @@ import { FEATURE_FLAGS } from '@/lib/featureFlags';
 import { useTimetable } from '@/lib/TimeTableContext';
 import { usePreferences } from '@/lib/PreferencesContext';
 import { getPlannerStoredValue, setPlannerStoredValue } from '@/lib/plannerStorage';
-import { generateTT } from '@/lib/utils';
+import { generateTT, parseName } from '@/lib/utils';
+import { clearPlannerClientCache } from '@/lib/clientCache';
+import LoginModal from '@/components/loginPopup';
 import { getSlotViewPayload } from '@/lib/slot-view';
 import { clashMap, findMatchingLabSlot } from '@/lib/slots';
 import { isTheoryType, isLabType } from '@/lib/chennaiCatalog';
@@ -209,6 +211,19 @@ export default function CourseSelectionPage() {
     const [activeCourseCode, setActiveCourseCode] = useState<string | null>(null);
     const [loaded, setLoaded] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const [showLogin, setShowLogin] = useState(false);
+    const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
+
+    const navigateWithLoader = (path: string, label: string) => {
+        setNavigatingTo(label);
+        setTimeout(() => router.push(path), 250);
+    };
+
+    const handleLogout = React.useCallback(() => {
+        clearPlannerClientCache({ includeEditingState: true });
+        signOut({ callbackUrl: '/' });
+    }, []);
 
     const { scheduleRows, leftTimes, rightTimes } = useMemo(() => getSlotViewPayload(), []);
 
@@ -504,6 +519,16 @@ export default function CourseSelectionPage() {
 
     return (
         <div className="min-h-screen bg-[#F5E6D3] font-sans flex flex-col pb-12">
+            {/* Navigation Loader Overlay */}
+            {navigatingTo && (
+                <div className="fixed inset-0 z-[9999] bg-[#F5E6D3]/80 backdrop-blur-sm flex flex-col items-center justify-center gap-5">
+                    <div className="relative w-14 h-14">
+                        <div className="absolute inset-0 rounded-full border-4 border-[#eadcc5]/50" />
+                        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-emerald-500" style={{ animation: 'spin 0.8s linear infinite' }} />
+                    </div>
+                    <span className="text-sm font-bold text-gray-600 tracking-wide">{navigatingTo}</span>
+                </div>
+            )}
             {/* Header */}
             <header className="w-full bg-[#FAFAFA]/90 backdrop-blur-md border-b border-[#eadcc5]/60 py-4 px-6 shrink-0 flex items-center justify-between shadow-sm sticky top-0 z-50">
                 <div className="flex items-center gap-4">
@@ -521,7 +546,7 @@ export default function CourseSelectionPage() {
                         <button
                             type="button"
                             role="switch"
-                            onClick={() => router.push('/preferences')}
+                            onClick={() => navigateWithLoader('/preferences', 'Switching to Preferences...')}
                             aria-checked={true}
                             aria-label="Toggle course selection mode"
                             className="relative h-7 w-12 rounded-full shadow-inner transition-colors bg-emerald-500 focus:outline-none cursor-pointer"
@@ -529,15 +554,66 @@ export default function CourseSelectionPage() {
                             <span className="absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full transition-all duration-200 left-6 bg-white" />
                         </button>
                     </div>
-                    {session?.user?.image ? (
-                        <Image src={session.user.image} alt="avatar" width={32} height={32} className="w-8 h-8 rounded-full border border-gray-200" referrerPolicy="no-referrer" />
-                    ) : (
-                        <div className="w-8 h-8 rounded-full bg-[#8B6E60] text-white font-bold flex items-center justify-center text-xs">
-                            {session?.user?.name ? session.user.name[0].toUpperCase() : 'U'}
+
+                    {session ? (
+                        <div className="relative">
+                            <div
+                                className="flex items-center gap-2.5 cursor-pointer hover:opacity-85 transition-opacity py-1.5 px-3 rounded-full bg-white/70 border border-[#eadcc5]/60 hover:shadow-sm"
+                                onClick={() => setShowUserMenu(!showUserMenu)}
+                            >
+                                {session.user?.image && (
+                                    <Image src={session.user.image} alt="avatar" width={30} height={30} className="w-7 h-7 rounded-full object-cover" referrerPolicy="no-referrer" />
+                                )}
+                                <div className="profile-info-container">
+                                    <span className="profile-name-text font-bold text-gray-900 text-sm">
+                                        {parseName(session.user?.name).name}
+                                    </span>
+                                </div>
+                                <svg
+                                    className={`w-4 h-4 text-gray-700 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`}
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </div>
+
+                            {showUserMenu && (
+                                <>
+                                    <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)}></div>
+                                    <div className="absolute right-0 mt-2 w-full min-w-[170px] bg-white/95 backdrop-blur-md border border-[#eadcc5]/80 rounded-2xl shadow-xl z-20 p-1.5 animate-in zoom-in-95 duration-200">
+                                        <button
+                                            className="w-full text-left px-3.5 py-2.5 text-sm text-red-600 font-bold hover:bg-red-50/70 rounded-xl transition-colors flex items-center gap-2.5 cursor-pointer"
+                                            onClick={handleLogout}
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+                                            <span>Log out</span>
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
+                    ) : (
+                        <button
+                            className="flex items-center justify-center w-9 h-9 rounded-full bg-white/70 border border-[#eadcc5]/60 hover:shadow-sm hover:opacity-85 transition-all cursor-pointer"
+                            onClick={() => setShowLogin(true)}
+                            aria-label="Login"
+                            title="Login"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                                <circle cx="12" cy="8" r="1" fill="currentColor" stroke="none" />
+                            </svg>
+                        </button>
                     )}
                 </div>
             </header>
+
+            {showLogin && (
+                <LoginModal onClose={() => setShowLogin(false)} />
+            )}
 
             {/* Center Wrapper */}
             <div className="flex-1 w-full flex justify-center px-4 sm:px-6 py-6">
