@@ -606,6 +606,14 @@ const data = [
     "CREDITS": 3,
     "SLOT": "E1+TE1",
     "FACULTY": "SELLAM V"
+  },
+  {
+    "CODE": "BSTS301P",
+    "TITLE": "Advanced Competitive Coding – I",
+    "TYPE": "SS",
+    "CREDITS": 3,
+    "SLOT": "G1+TG1, G2+TG2",
+    "FACULTY": ""
   }
 ] as const;
 
