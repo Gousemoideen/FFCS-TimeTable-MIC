@@ -1436,8 +1436,8 @@ export default function CourseSelectionPage() {
                                                                  >
                                                                      {theoryCell ? (
                                                                          <>
-                                                                             <span className="font-black text-black text-[10.5px] md:text-[11.5px] leading-tight">{theoryLabel}</span>
-                                                                             <span className="font-black text-[#1d5225] text-[9px] md:text-[9.5px] uppercase tracking-normal leading-tight w-full px-1 truncate">{theoryCell.courseCode}</span>
+                                                                             <span className="font-semibold text-black text-[10.5px] md:text-[11.5px] leading-tight">{theoryLabel}</span>
+                                                                             <span className="font-semibold text-[#1d5225] text-[9px] md:text-[9.5px] uppercase tracking-normal leading-tight w-full px-1 truncate">{theoryCell.courseCode}</span>
                                                                          </>
                                                                      ) : (
                                                                          <span className="font-bold text-[#4ea075] text-[10.5px] md:text-[11.5px] opacity-45">{theoryLabel}</span>
@@ -1454,8 +1454,8 @@ export default function CourseSelectionPage() {
                                                                  >
                                                                      {labCell ? (
                                                                          <>
-                                                                             <span className="font-black text-black text-[10.5px] md:text-[11.5px] leading-tight">{labLabel}</span>
-                                                                             <span className="font-black text-[#665319] text-[9px] md:text-[9.5px] uppercase tracking-normal leading-tight w-full px-1 truncate">{labCell.courseCode}</span>
+                                                                             <span className="font-semibold text-black text-[10.5px] md:text-[11.5px] leading-tight">{labLabel}</span>
+                                                                             <span className="font-semibold text-[#665319] text-[9px] md:text-[9.5px] uppercase tracking-normal leading-tight w-full px-1 truncate">{labCell.courseCode}</span>
                                                                          </>
                                                                      ) : (
                                                                          <span className="font-bold text-[#d4a044] text-[10.5px] md:text-[11.5px] opacity-45">{labLabel}</span>
