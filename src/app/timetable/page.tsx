@@ -661,7 +661,10 @@ export default function TimetablePage() {
         <div className="h-screen bg-[#F5E6D3] overflow-hidden">
             {/* Toast */}
             {toast && (
-                <div className={`fixed top-8 right-8 z-100 text-white px-8 py-4 rounded-2xl shadow-2xl text-[14px] font-bold animate-[slideIn_0.3s_ease] border border-white/10 ${toastType === 'error' ? 'bg-red-500' : 'bg-[#1a1a2e]'}`}>
+                <div 
+                    className={`fixed top-8 right-8 text-white px-8 py-4 rounded-2xl shadow-2xl text-[14px] font-bold animate-[slideIn_0.3s_ease] border border-white/10 ${toastType === 'error' ? 'bg-red-500' : 'bg-[#1a1a2e]'}`}
+                    style={{ zIndex: 100000 }}
+                >
                     {toast}
                 </div>
             )}
@@ -1016,7 +1019,11 @@ export default function TimetablePage() {
             )}
 
             {showDownloadModal && (
-                <div className="fixed inset-0 z-520 flex items-center justify-center bg-black/35 px-4 backdrop-blur-sm" onClick={() => !isDownloading && setShowDownloadModal(false)}>
+                <div 
+                    className="fixed inset-0 flex items-center justify-center bg-black/35 px-4 backdrop-blur-sm" 
+                    style={{ zIndex: 99999 }}
+                    onClick={() => !isDownloading && setShowDownloadModal(false)}
+                >
                     <div
                         className="relative w-full max-w-118 animate-[scaleIn_0.2s_ease] overflow-hidden rounded-[30px] border border-[#eadcc5] bg-[#FFF8E7] p-7 shadow-[0_24px_70px_rgba(74,54,30,0.18)] sm:p-8"
                         onClick={(e) => e.stopPropagation()}
@@ -1087,7 +1094,11 @@ export default function TimetablePage() {
 
             {/* Share Modal */}
             {showShareModal && (
-                <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/35 px-4 backdrop-blur-sm" onClick={() => setShowShareModal(false)}>
+                <div 
+                    className="fixed inset-0 flex items-center justify-center bg-black/35 px-4 backdrop-blur-sm" 
+                    style={{ zIndex: 99999 }}
+                    onClick={() => setShowShareModal(false)}
+                >
                     <div
                         className="relative w-full max-w-118 animate-[scaleIn_0.2s_ease] overflow-hidden rounded-[30px] border border-[#eadcc5] bg-[#FFF8E7] p-7 shadow-[0_24px_70px_rgba(74,54,30,0.18)] sm:p-8"
                         onClick={e => e.stopPropagation()}
@@ -1181,10 +1192,14 @@ export default function TimetablePage() {
 
             {/* Save Modal */}
             {showSaveModal && (
-                <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/35 px-4 backdrop-blur-sm" onClick={() => {
-                    setSaveError('');
-                    setShowSaveModal(false);
-                }}>
+                <div 
+                    className="fixed inset-0 flex items-center justify-center bg-black/35 px-4 backdrop-blur-sm" 
+                    style={{ zIndex: 99999 }}
+                    onClick={() => {
+                        setSaveError('');
+                        setShowSaveModal(false);
+                    }}
+                >
                     <div
                         className="relative w-full max-w-118 animate-[scaleIn_0.2s_ease] overflow-hidden rounded-[30px] border border-[#eadcc5] bg-[#FFF8E7] p-7 shadow-[0_24px_70px_rgba(74,54,30,0.18)] sm:p-8"
                         onClick={e => e.stopPropagation()}
