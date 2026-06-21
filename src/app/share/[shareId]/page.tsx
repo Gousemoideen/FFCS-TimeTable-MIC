@@ -154,7 +154,7 @@ export default function SharePage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F5E6D3] font-sans flex flex-col items-center py-4 md:py-8">
+        <div className="min-h-screen bg-[#F5E6D3] font-sans flex flex-col items-center pt-4 md:pt-8 pb-0">
             <div className="w-[95%] max-w-350 bg-[#FFFBF0] rounded-3xl md:rounded-4xl p-5 md:p-8 my-4 md:my-8 pb-4 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 md:pb-6 ml-0 md:ml-2 border-b border-gray-100 pb-4">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 md:gap-4">

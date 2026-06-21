@@ -1082,7 +1082,7 @@ export default function CourseSelectionPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F5E6D3] font-sans flex flex-col pb-12">
+        <div className="min-h-screen bg-[#F5E6D3] font-sans flex flex-col">
             {/* Navigation Loader Overlay */}
             {navigatingTo && (
                 <div className="fixed inset-0 z-[9999] bg-[#F5E6D3]/80 backdrop-blur-sm flex flex-col items-center justify-center gap-5">
