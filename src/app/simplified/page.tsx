@@ -1367,22 +1367,22 @@ export default function CourseSelectionPage() {
                             </div>
                         ) : (
                             <div className="p-1.5 h-full">
-                                <table className="w-full table-fixed border-collapse bg-white text-center min-w-[700px] text-xs h-full min-h-[340px]">
+                                <table className="w-full table-fixed border-collapse bg-white text-center min-w-[700px] text-xs h-full min-h-[420px]">
                                     <thead>
-                                        <tr className="border-b-2 border-white h-8">
-                                            <th className="text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] w-14 p-0.5 text-[9px] leading-tight">Theory Hours</th>
+                                        <tr className="border-b-2 border-white h-10">
+                                            <th className="text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] w-14 md:w-16 p-0.5 text-[10px] md:text-[11px] leading-tight">Theory Hours</th>
                                             {[...leftTimes, { theory: '', lab: '' }, ...rightTimes].map((t, i) => (
-                                                <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] ${i === 6 ? 'w-6 px-0' : 'p-0.5 text-[9px] leading-tight'}`}>
+                                                <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] ${i === 6 ? 'w-6 px-0' : 'p-0.5 text-[10px] md:text-[11px] leading-tight'}`}>
                                                     {t.theory ? t.theory.split('-').map((part, idx, arr) => (
                                                         <span key={idx} className="block whitespace-nowrap">{part}{idx < arr.length - 1 ? '-' : ''}</span>
                                                     )) : null}
                                                 </th>
                                             ))}
                                         </tr>
-                                        <tr className="border-b-2 border-white h-8">
-                                            <th className="text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] w-14 p-0.5 text-[9px] leading-tight">Lab Hours</th>
+                                        <tr className="border-b-2 border-white h-10">
+                                            <th className="text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] w-14 md:w-16 p-0.5 text-[10px] md:text-[11px] leading-tight">Lab Hours</th>
                                             {[...leftTimes, { theory: '', lab: '' }, ...rightTimes].map((t, i) => (
-                                                <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] ${i === 6 ? 'w-6 px-0' : 'p-0.5 text-[9px] leading-tight'}`}>
+                                                <th key={i} className={`text-center font-bold text-black border-r-2 border-white bg-[#FAFAFA] ${i === 6 ? 'w-6 px-0' : 'p-0.5 text-[10px] md:text-[11px] leading-tight'}`}>
                                                     {t.lab ? t.lab.split('-').map((part, idx, arr) => (
                                                         <span key={idx} className="block whitespace-nowrap">{part}{idx < arr.length - 1 ? '-' : ''}</span>
                                                     )) : null}
@@ -1392,27 +1392,27 @@ export default function CourseSelectionPage() {
                                     </thead>
                                     <tbody className="bg-white">
                                         {scheduleRows.map((row, rowIdx) => (
-                                            <tr key={row.day} className="h-14">
-                                                <td className="text-black text-center align-middle border-r-2 border-white bg-[#FAFAFA] font-bold w-14 p-0 text-[9px]">{row.day}</td>
+                                            <tr key={row.day} className="h-20">
+                                                <td className="text-black text-center align-middle border-r-2 border-white bg-[#FAFAFA] font-bold w-14 md:w-16 p-0 text-[10.5px]">{row.day}</td>
                                                 {Array.from({ length: 13 }).map((_, colIdx) => {
                                                     if (colIdx === 6) {
                                                         const lunchLetters = ['L', 'U', 'N', 'C', 'H'];
                                                         return (
                                                             <td key="lunch-spacer" className="border-r-2 border-white align-middle bg-[#f8f9fa] w-6 p-0">
                                                                 <div className="flex h-full flex-col items-center justify-center">
-                                                                    <span className="font-black text-black opacity-80 text-[9px]">
+                                                                    <span className="font-black text-black opacity-80 text-[10.5px]">
                                                                         {lunchLetters[rowIdx]}
                                                                     </span>
                                                                 </div>
                                                             </td>
                                                         );
                                                     }
-
+ 
                                                     const theoryCell = theoryGrid[rowIdx][colIdx];
                                                     const labCell = labGrid[rowIdx][colIdx];
                                                     const theoryBackgroundColor = theoryCell ? THEORY_FILLED_COLOR : THEORY_EMPTY_COLOR;
                                                     const labBackgroundColor = labCell ? LAB_FILLED_COLOR : LAB_EMPTY_COLOR;
-
+ 
                                                     let theoryLabel = '';
                                                     let labLabel = '';
                                                     if (colIdx < 6) {
@@ -1422,10 +1422,10 @@ export default function CourseSelectionPage() {
                                                         theoryLabel = row.theoryRight[colIdx - 7].label;
                                                         labLabel = row.labRight[colIdx - 7].label;
                                                     }
-
+ 
                                                     return (
                                                          <td key={colIdx} className="align-top border-r-2 border-white p-0 bg-white">
-                                                             <div className="grid w-full grid-rows-2 gap-0 h-full min-h-[64px]">
+                                                             <div className="grid w-full grid-rows-2 gap-0 h-full min-h-[80px]">
                                                                  <div
                                                                      data-slot-label={theoryLabel}
                                                                      data-slot-category="theory"
@@ -1436,14 +1436,14 @@ export default function CourseSelectionPage() {
                                                                  >
                                                                      {theoryCell ? (
                                                                          <>
-                                                                             <span className="font-black text-black text-[9px] leading-tight">{theoryLabel}</span>
-                                                                             <span className="font-black text-[#1d5225] text-[7.5px] uppercase tracking-wide leading-tight max-w-[50px] truncate">{theoryCell.courseCode}</span>
+                                                                             <span className="font-black text-black text-[10.5px] md:text-[11.5px] leading-tight">{theoryLabel}</span>
+                                                                             <span className="font-black text-[#1d5225] text-[9px] md:text-[9.5px] uppercase tracking-normal leading-tight w-full px-1 truncate">{theoryCell.courseCode}</span>
                                                                          </>
                                                                      ) : (
-                                                                         <span className="font-bold text-[#4ea075] text-[9px] opacity-45">{theoryLabel}</span>
+                                                                         <span className="font-bold text-[#4ea075] text-[10.5px] md:text-[11.5px] opacity-45">{theoryLabel}</span>
                                                                      )}
                                                                  </div>
-
+ 
                                                                  <div
                                                                      data-slot-label={labLabel}
                                                                      data-slot-category="lab"
@@ -1454,11 +1454,11 @@ export default function CourseSelectionPage() {
                                                                  >
                                                                      {labCell ? (
                                                                          <>
-                                                                             <span className="font-black text-black text-[9px] leading-tight">{labLabel}</span>
-                                                                             <span className="font-black text-[#665319] text-[7.5px] uppercase tracking-wide leading-tight max-w-[50px] truncate">{labCell.courseCode}</span>
+                                                                             <span className="font-black text-black text-[10.5px] md:text-[11.5px] leading-tight">{labLabel}</span>
+                                                                             <span className="font-black text-[#665319] text-[9px] md:text-[9.5px] uppercase tracking-normal leading-tight w-full px-1 truncate">{labCell.courseCode}</span>
                                                                          </>
                                                                      ) : (
-                                                                         <span className="font-bold text-[#d4a044] text-[9px] opacity-45">{labLabel}</span>
+                                                                         <span className="font-bold text-[#d4a044] text-[10.5px] md:text-[11.5px] opacity-45">{labLabel}</span>
                                                                      )}
                                                                  </div>
                                                              </div>
