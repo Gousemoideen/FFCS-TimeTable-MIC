@@ -10,6 +10,7 @@ import { useFeatureFlagEnabled } from '@posthog/react';
 import { FEATURE_FLAGS } from '@/lib/featureFlags';
 import { useTimetable } from '@/lib/TimeTableContext';
 import { usePreferences } from '@/lib/PreferencesContext';
+import ModeHelpDialog from '@/components/ModeHelpDialog';
 import { getPlannerStoredValue, setPlannerStoredValue } from '@/lib/plannerStorage';
 import { generateTT } from '@/lib/utils';
 import { getSlotViewPayload } from '@/lib/slot-view';
@@ -43,6 +44,17 @@ const THEORY_FILLED_COLOR = '#BFF0C8';
 const THEORY_EMPTY_COLOR = '#E1F9E9';
 const LAB_FILLED_COLOR = '#FFE78A';
 const LAB_EMPTY_COLOR = '#FFF2BF';
+
+const ALL_SUBJECTS_MODE_HELP = [
+    {
+        title: 'All Subjects Mode - ON',
+        description: 'Generated timetables strictly include all of the selected subjects.',
+    },
+    {
+        title: 'All Subjects Mode - OFF',
+        description: 'You can toggle off checkboxes for specific subjects to quickly preview how your timetable looks without them, instead of deleting them entirely.',
+    },
+];
 
 // Check if two slots clash
 const doSlotsClash = (slot1: string, slot2: string): boolean => {
@@ -201,7 +213,7 @@ export default function CourseSelectionPage() {
     const { selectedScheme, setSelectedScheme } = usePreferences();
     
     // Feature Flag check
-    const isSimplifiedEnabled = useFeatureFlagEnabled(FEATURE_FLAGS.simplifiedFlow);
+    const isSimplifiedEnabled = true; // Forced true for local testing
 
     // Local selections
     const [selectedOptions, setSelectedOptions] = useState<CourseOption[]>([]);
@@ -209,6 +221,9 @@ export default function CourseSelectionPage() {
     const [activeCourseCode, setActiveCourseCode] = useState<string | null>(null);
     const [loaded, setLoaded] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [allSubjectsMode, setAllSubjectsMode] = useState(false);
+    const [disabledOptions, setDisabledOptions] = useState<Set<string>>(new Set());
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
 
     const { scheduleRows, leftTimes, rightTimes } = useMemo(() => getSlotViewPayload(), []);
 
@@ -262,7 +277,8 @@ export default function CourseSelectionPage() {
     useEffect(() => {
         if (!loaded) return;
 
-        const faculties = optionsToFacultyEntries(selectedOptions);
+        const activeOptions = allSubjectsMode ? selectedOptions : selectedOptions.filter(opt => !disabledOptions.has(opt.id));
+        const faculties = optionsToFacultyEntries(activeOptions);
         const facultyNames = faculties.map(f => f.facultyName);
         
         setPlannerStoredValue('preferenceMultipleFaculties', JSON.stringify(facultyNames));
@@ -275,7 +291,7 @@ export default function CourseSelectionPage() {
         const { result } = generateTT(updatedCourses);
         setTimetableData(result);
         setCurrentIndex(0); // Reset combination index
-    }, [selectedOptions, loaded, setTimetableData]);
+    }, [selectedOptions, disabledOptions, allSubjectsMode, loaded, setTimetableData]);
 
     // Unique courses list for search autocomplete
     const uniqueCourses = useMemo(() => {
@@ -467,8 +483,9 @@ export default function CourseSelectionPage() {
 
     // Total credits selected
     const totalCredits = useMemo(() => {
-        return selectedOptions.reduce((acc, curr) => acc + curr.credits, 0);
-    }, [selectedOptions]);
+        const activeOptions = allSubjectsMode ? selectedOptions : selectedOptions.filter(opt => !disabledOptions.has(opt.id));
+        return activeOptions.reduce((acc, curr) => acc + curr.credits, 0);
+    }, [selectedOptions, disabledOptions, allSubjectsMode]);
 
     const handleClearAll = () => {
         setSelectedOptions([]);
@@ -668,58 +685,67 @@ export default function CourseSelectionPage() {
                     )}
 
                     {/* Selected Courses Summary */}
-                    <div className="bg-white rounded-3xl p-5 md:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] border border-[#eaeaea]/80 flex flex-col gap-4">
-                        <div className="flex justify-between items-center shrink-0">
-                            <div>
-                                <h2 className="text-xl font-bold text-black flex items-center gap-2">
-                                    Selected Courses
-                                </h2>
-                                <p className="text-xs text-gray-500 mt-0.5">Click trash icon to remove a course</p>
-                            </div>
-                            {selectedOptions.length > 0 && (
-                                <button
-                                    onClick={handleClearAll}
-                                    className="text-xs font-bold text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100/60 rounded-xl px-3 py-2 cursor-pointer transition-colors"
-                                >
-                                    Clear All
-                                </button>
-                            )}
+                    <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.015)] border border-[#eaeaea]/80 flex flex-col overflow-hidden">
+                        <div className="bg-[#a9d6a9] px-6 md:px-8 py-4 flex justify-between items-center shrink-0">
+                            <h2 className="text-2xl font-bold text-[#1f1f1f] flex items-center gap-2">
+                                Selected Courses
+                            </h2>
                         </div>
 
-                        {/* List/Table */}
-                        <div className="w-full overflow-x-auto">
+                        <div className="p-5 md:p-6 flex flex-col gap-4">
+                            {/* List/Table */}
+                        <div className="w-full overflow-x-auto custom-scrollbar">
                             {selectedOptions.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center gap-2.5 py-6">
                                     <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400" />
                                     <p className="text-sm font-semibold text-gray-400">No courses selected yet. Search above to begin!</p>
                                 </div>
                             ) : (
-                                <table className="w-full text-left border-collapse text-xs">
-                                    <thead>
-                                        <tr className="border-b border-gray-100 text-gray-400 font-bold uppercase tracking-wider">
-                                            <th className="py-2.5">Course</th>
-                                            <th className="py-2.5">Faculty</th>
-                                            <th className="py-2.5">Slot</th>
-                                            <th className="py-2.5 text-center">Cr</th>
-                                            <th className="py-2.5 text-right"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {selectedOptions.map((opt) => (
-                                            <tr key={opt.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                                                <td className="py-3 pr-2">
-                                                    <span className="font-black text-[#3B5BDB] block">{opt.courseCode}</span>
-                                                    <span className="text-[10px] text-gray-500 font-medium line-clamp-1">{opt.courseName}</span>
-                                                </td>
-                                                <td className="py-3 font-semibold text-gray-700 pr-2">{opt.facultyName}</td>
-                                                <td className="py-3 pr-2">
+                                <div className="min-w-[900px] flex flex-col h-full">
+                                    <div className="grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_60px] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0 pr-[8px]">
+                                        <div className="px-4 py-3 text-sm font-bold"></div>
+                                        <div className="px-4 py-3 text-sm font-bold">No</div>
+                                        <div className="px-4 py-3 text-sm font-bold">Course Code</div>
+                                        <div className="px-4 py-3 text-sm font-bold">Course Name</div>
+                                        <div className="px-4 py-3 text-sm font-bold">Faculty Name</div>
+                                        <div className="px-4 py-3 text-sm font-bold">Slot</div>
+                                        <div className="px-4 py-3 text-sm font-bold text-center">CR</div>
+                                        <div className="px-4 py-3 text-sm font-bold text-right"></div>
+                                    </div>
+                                    <div className="flex-1 min-h-0 overflow-y-scroll custom-scrollbar px-0 max-h-[260px] scroll-smooth">
+                                        {selectedOptions.map((opt, index) => (
+                                            <div
+                                                key={opt.id}
+                                                className={`grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_60px] border-b border-[#f0f0f0] items-center transition-colors ${!allSubjectsMode && disabledOptions.has(opt.id) ? 'opacity-50 bg-gray-50' : 'bg-white hover:bg-[#f8f8f8]'}`}
+                                            >
+                                                <div className="px-4 py-4 flex items-center justify-center">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={allSubjectsMode || !disabledOptions.has(opt.id)}
+                                                        onChange={(e) => {
+                                                            setDisabledOptions(prev => {
+                                                                const next = new Set(prev);
+                                                                if (e.target.checked) next.delete(opt.id);
+                                                                else next.add(opt.id);
+                                                                return next;
+                                                            });
+                                                        }}
+                                                        disabled={allSubjectsMode}
+                                                        className="w-4 h-4 rounded border-gray-300 text-[#3B5BDB] focus:ring-[#3B5BDB] cursor-pointer disabled:cursor-not-allowed"
+                                                    />
+                                                </div>
+                                                <div className="px-4 py-4 text-sm font-semibold text-[#1f1f1f]">{index + 1}</div>
+                                                <div className="px-4 py-4 text-sm font-semibold font-mono text-[#1f1f1f]">{opt.courseCode}</div>
+                                                <div className="px-4 py-4 text-sm leading-relaxed text-[#1f1f1f]">{opt.courseName}</div>
+                                                <div className="px-4 py-4 text-sm leading-relaxed text-[#1f1f1f]">{opt.facultyName}</div>
+                                                <div className="px-4 py-4 text-sm font-semibold text-[#1f1f1f]">
                                                     <div className="flex flex-col gap-0.5">
-                                                        {opt.theorySlot && <span className="font-bold text-emerald-700">T: {opt.theorySlot}</span>}
-                                                        {opt.labSlot && <span className="font-bold text-amber-700">L: {opt.labSlot}</span>}
+                                                        {opt.theorySlot && <span className="font-bold">T: {opt.theorySlot}</span>}
+                                                        {opt.labSlot && <span className="font-bold">L: {opt.labSlot}</span>}
                                                     </div>
-                                                </td>
-                                                <td className="py-3 text-center font-bold text-gray-700">{opt.credits}</td>
-                                                <td className="py-3 text-right">
+                                                </div>
+                                                <div className="px-4 py-4 text-sm font-bold text-gray-700 text-center">{opt.credits}</div>
+                                                <div className="px-4 py-4 flex items-center justify-end">
                                                     <button
                                                         onClick={() => handleRemoveCourse(opt.courseCode)}
                                                         className="text-gray-400 hover:text-red-500 cursor-pointer p-1.5 hover:bg-red-50 rounded-lg transition-colors"
@@ -733,25 +759,72 @@ export default function CourseSelectionPage() {
                                                             <line x1="14" x2="14" y1="11" y2="17" />
                                                         </svg>
                                                     </button>
-                                                </td>
-                                            </tr>
+                                                </div>
+                                            </div>
                                         ))}
-                                    </tbody>
-                                </table>
+                                    </div>
+                                </div>
                             )}
                         </div>
 
-                        {/* Credits Footer */}
+                        {/* Footer Controls & Credits */}
                         {selectedOptions.length > 0 && (
-                            <div className="pt-3 border-t border-gray-100 shrink-0 flex items-center justify-between text-black font-extrabold text-sm">
-                                <span>Total Selected Credits:</span>
-                                <span className="px-3.5 py-1.5 bg-[#E9D5FF] text-purple-800 rounded-full font-black text-xs border border-[#F2D8FE]">
-                                    {totalCredits} Credits
-                                </span>
+                            <div className="pt-4 mt-2 border-t border-gray-100 shrink-0 flex flex-col md:flex-row items-center justify-between gap-4">
+                                {/* Bottom Left: All Subjects Mode */}
+                                <div className="flex-1 flex justify-start">
+                                    <div className="flex items-center gap-2 bg-[#f2e6b5] rounded-xl px-3 py-2 shadow-[0_4px_10px_rgba(0,0,0,0.08)]">
+                                        <span className="text-[13px] md:text-sm font-semibold text-[#1f1f1f]">All subjects mode</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsHelpOpen(true)}
+                                            className="w-6 h-6 rounded-full bg-[#e6c44c] text-[#1f1f1f] font-bold text-xs shadow-inner grid place-items-center hover:brightness-95 transition"
+                                            aria-label="All subjects mode info"
+                                        >
+                                            ?
+                                        </button>
+                                        <label className="relative inline-flex items-center cursor-pointer select-none ml-1">
+                                            <input
+                                                type="checkbox"
+                                                className="sr-only peer"
+                                                checked={allSubjectsMode}
+                                                onChange={(e) => setAllSubjectsMode(e.target.checked)}
+                                            />
+                                            <div className="w-11 h-6 bg-white border border-[#d8d1a3] rounded-full peer-checked:bg-[#e6c44c] transition-colors duration-200"></div>
+                                            <div className="absolute left-1 top-1 w-4 h-4 bg-[#d8d1a3] rounded-full transition-all duration-200 peer-checked:translate-x-5 peer-checked:bg-white" />
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Center: Credits */}
+                                <div className="shrink-0 flex items-center justify-center">
+                                    <div className="flex items-center gap-3 text-black font-extrabold text-sm">
+                                        <span>Total Selected Credits:</span>
+                                        <span className="px-3.5 py-1.5 bg-[#E9D5FF] text-purple-800 rounded-full font-black text-xs border border-[#F2D8FE] shadow-sm">
+                                            {totalCredits} Credits
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Bottom Right: Delete All */}
+                                <div className="flex-1 flex justify-end">
+                                    <button
+                                        onClick={handleClearAll}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-red-600 font-bold text-sm bg-white border border-red-200 hover:bg-red-50 hover:border-red-300 transition-colors shadow-sm"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M3 6h18" />
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                            <line x1="10" x2="10" y1="11" y2="17" />
+                                            <line x1="14" x2="14" y1="11" y2="17" />
+                                        </svg>
+                                        Delete all
+                                    </button>
+                                </div>
                             </div>
                         )}
+                        </div>
                     </div>
-
                 {/* Timetable Preview Box */}
                 <div className="w-full flex flex-col gap-4 bg-white rounded-3xl p-5 md:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] border border-[#eaeaea]/80">
                     
@@ -927,6 +1000,19 @@ export default function CourseSelectionPage() {
                 </div>
             </main>
             </div>
+            {isHelpOpen && (
+                <ModeHelpDialog
+                    sections={ALL_SUBJECTS_MODE_HELP}
+                    onClose={() => setIsHelpOpen(false)}
+                />
+            )}
+            <style jsx>{`
+                .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #7bcf86 #eeeeee; }
+                .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: #eeeeee; border-radius: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #7bcf86; border-radius: 6px; border: 1px solid #eeeeee; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6bc679; }
+            `}</style>
         </div>
     );
 }

@@ -55,7 +55,7 @@ export default function LandingPage() {
   const floatingContainerRef = React.useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const { data: session } = useSession();
-  const isSimplifiedEnabled = useFeatureFlagEnabled(FEATURE_FLAGS.simplifiedFlow);
+  const isSimplifiedEnabled = true; // Forced true for local beta testing
 
   const handleLogout = React.useCallback(() => {
     clearPlannerClientCache({ includeEditingState: true });
