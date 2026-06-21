@@ -98,7 +98,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     name: "Rahul",
     role: "Developer",
     category: "fullstack",
-    tagline: "Auth, teams page, share timetable page & timetable page layouts.",
+    tagline: "Developed Auth, share timetable page & timetable page layouts.",
     gradient: "from-[#FFE094] to-[#FD7E14]",
     photo: "https://h8z6stjynz.ufs.sh/f/dummy_rahul",
     github: "https://github.com/sd-rahulk",
@@ -108,7 +108,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     name: "Subhayan Niyogi",
     role: "Developer",
     category: "frontend",
-    tagline: "Preferences page developer.",
+    tagline: "Developed the Preferences page.",
     gradient: "from-[#C5F6FA] to-[#0B7285]",
     photo: "https://h8z6stjynz.ufs.sh/f/nEev6VX4XfKENp1DkzcJYjwsBLCbSNUMGi76gpR4tA0OayfV",
     github: "https://github.com/hello-lab",
@@ -128,11 +128,11 @@ const TEAM_MEMBERS: TeamMember[] = [
     name: "Surya R",
     role: "Developer",
     category: "frontend",
-    tagline: "Grid components & interactive slots modularizer.",
+    tagline: "developed slot view page & animated the landing page",
     gradient: "from-[#FFD8A8] to-[#E8590C]",
-    photo: "https://h8z6stjynz.ufs.sh/f/dummy_surya",
-    github: "https://github.com/dummy",
-    linkedin: "https://linkedin.com/in/dummy"
+    photo: "https://h8z6stjynz.ufs.sh/f/nEev6VX4XfKE3owzoTOlbGZuJ6WArzQs07hUdD45HqnjPeTw",
+    github: "https://github.com/surya-749",
+    linkedin: "https://linkedin.com/in/surya-R008"
   },
   {
     name: "Souptik Dam",

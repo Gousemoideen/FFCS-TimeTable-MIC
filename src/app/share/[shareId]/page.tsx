@@ -227,8 +227,8 @@ export default function SharePage() {
                                         
                                         const theoryCell = theoryGrid[rowIdx][colIdx];
                                         const labCell = labGrid[rowIdx][colIdx];
-                                        const theoryBackgroundColor = theoryCell ? getSlotColor(theoryCell.courseCode, allCodes) : '#e6f9ed';
-                                        const labBackgroundColor = labCell ? getSlotColor(labCell.courseCode, allCodes) : '#fff6e0';
+                                        const theoryBackgroundColor = theoryCell ? '#C8F7DC' : '#e6f9ed';
+                                        const labBackgroundColor = labCell ? '#FFF3B0' : '#fff6e0';
 
                                         let theoryLabel = '';
                                         let labLabel = '';
@@ -321,8 +321,8 @@ export default function SharePage() {
                             width: '335px',
                             height: '312px',
                             maxWidth: '92vw',
-                            backgroundColor: selectedSlotCategory === 'theory' ? '#CFF3D5' : '#E8D7FF',
-                            borderColor: selectedSlotCategory === 'theory' ? '#6AA874' : '#8B6FB8',
+                            backgroundColor: selectedSlotCategory === 'theory' ? '#CFF3D5' : '#FFF9D0',
+                            borderColor: selectedSlotCategory === 'theory' ? '#6AA874' : '#D4A044',
                         }}
                         onClick={e => e.stopPropagation()}
                     >

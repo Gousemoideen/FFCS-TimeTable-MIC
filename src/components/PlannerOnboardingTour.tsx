@@ -57,25 +57,34 @@ export default function PlannerOnboardingTour() {
     }, []);
 
     const steps = useMemo<PlannerTourStep[]>(() => {
-        if (!isSchoolSelectionEnabled) {
-            return plannerTourSteps;
+        let baseSteps = [...plannerTourSteps];
+
+        if (isSchoolSelectionEnabled) {
+            const schoolStep: PlannerTourStep = {
+                route: '/preferences',
+                target: '[data-tour="preferences-step-school"]',
+                title: 'Select School',
+                content: 'Select your academic school to view and filter courses related to your department.',
+                placement: 'right',
+                preferenceStep: 0,
+                before: () => setPreferenceStep(0),
+            };
+            baseSteps.splice(1, 0, schoolStep);
         }
 
-        const schoolStep: PlannerTourStep = {
-            route: '/preferences',
-            target: '[data-tour="preferences-step-school"]',
-            title: 'Select School',
-            content: isDirectJumpEnabled
-                ? 'Select your school (e.g. SCOPE, SENSE) to filter courses by department, or use the "Skip & Search All Subjects" button to view the entire catalog directly.'
-                : 'Select your academic school to view and filter courses related to your department.',
-            placement: 'right',
-            preferenceStep: 0,
-            before: () => setPreferenceStep(0),
-        };
+        if (isDirectJumpEnabled) {
+            baseSteps = baseSteps.map(step => {
+                if (step.target === '[data-tour="preferences-step-2"]') {
+                    return {
+                        ...step,
+                        content: 'Select the course you want to include, or use the "Show All Courses" button to browse the entire catalog directly.',
+                    };
+                }
+                return step;
+            });
+        }
 
-        const newSteps = [...plannerTourSteps];
-        newSteps.splice(1, 0, schoolStep);
-        return newSteps;
+        return baseSteps;
     }, [isSchoolSelectionEnabled, isDirectJumpEnabled]);
     const currentStep = steps[stepIndex];
     const isStepAllowed = useCallback((step: PlannerTourStep) => {

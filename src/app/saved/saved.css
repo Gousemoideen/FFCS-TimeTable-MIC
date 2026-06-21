@@ -121,7 +121,7 @@
   position: fixed;
   top: 24px;
   right: 24px;
-  z-index: 100;
+  z-index: 9999;
   background: #1a1a2e;
   color: white;
   padding: 12px 24px;
@@ -217,35 +217,16 @@
   padding: 10px 4px 16px;
   flex: 0 0 auto;
   min-height: 390px;
-  scrollbar-gutter: stable;
   align-items: stretch;
   align-content: flex-start;
   width: 100%;
   min-width: 0;
-}
-
-.white-cards-box.hide-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-.white-cards-box.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
 .white-cards-box::-webkit-scrollbar {
-  height: 10px;
-}
-
-.white-cards-box::-webkit-scrollbar-track {
-  background: #edf1fb;
-  border-radius: 999px;
-}
-
-.white-cards-box::-webkit-scrollbar-thumb {
-  background: linear-gradient(90deg, #a9c2f1 0%, #8fb1ea 100%);
-  border-radius: 999px;
-  border: 2px solid #edf1fb;
+  display: none;
 }
 
 /* ── Scroll arrows ── */
@@ -279,11 +260,11 @@
 }
 
 .absolute-left {
-  left: -20px;
+  left: 16px;
 }
 
 .absolute-right {
-  right: -20px;
+  right: 16px;
 }
 
 /* ── Bottom nav bar ── */
