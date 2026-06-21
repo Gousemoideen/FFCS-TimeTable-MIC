@@ -457,6 +457,7 @@ export default function CoursesPage() {
         setFaculties([]);
         setDeletedRow(null);
         setShowRemoveAllToast(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleUndoRemoveAll = () => {

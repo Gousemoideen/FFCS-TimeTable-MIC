@@ -1051,6 +1051,7 @@ export default function CourseSelectionPage() {
         setSelectedOptions([]);
         setActiveCourseCode(null);
         setSearchTerm('');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleProceedToSave = () => {
@@ -1618,13 +1619,6 @@ export default function CourseSelectionPage() {
                     {/* Bottom Controls panel */}
                     <div className="shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100">
                         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
-                            <button
-                                onClick={handleClearAll}
-                                disabled={selectedOptions.length === 0}
-                                className="px-5 py-3 bg-gray-50 border border-gray-200/80 rounded-2xl text-xs font-bold text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors shrink-0"
-                            >
-                                Reset Selection
-                            </button>
 
                             {/* Pagination */}
                             {totalCombinations > 0 && (
