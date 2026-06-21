@@ -224,6 +224,7 @@ export default function CourseSelectionPage() {
     const [allSubjectsMode, setAllSubjectsMode] = useState(false);
     const [disabledOptions, setDisabledOptions] = useState<Set<string>>(new Set());
     const [isHelpOpen, setIsHelpOpen] = useState(false);
+    const [undoStack, setUndoStack] = useState<CourseOption[][]>([]);
 
     const { scheduleRows, leftTimes, rightTimes } = useMemo(() => getSlotViewPayload(), []);
 
@@ -478,7 +479,35 @@ export default function CourseSelectionPage() {
 
     // Remove course selection
     const handleRemoveCourse = (courseCode: string) => {
+        setUndoStack(prev => [...prev, selectedOptions]);
         setSelectedOptions(prev => prev.filter(o => o.courseCode !== courseCode));
+    };
+
+    const handleUndo = () => {
+        setUndoStack(prev => {
+            if (prev.length === 0) return prev;
+            const lastState = prev[prev.length - 1];
+            setSelectedOptions(lastState);
+            return prev.slice(0, -1);
+        });
+    };
+
+    const handleMoveUp = (index: number) => {
+        if (index <= 0) return;
+        setSelectedOptions((prev) => {
+            const newOptions = [...prev];
+            [newOptions[index - 1], newOptions[index]] = [newOptions[index], newOptions[index - 1]];
+            return newOptions;
+        });
+    };
+
+    const handleMoveDown = (index: number) => {
+        setSelectedOptions((prev) => {
+            if (index >= prev.length - 1) return prev;
+            const newOptions = [...prev];
+            [newOptions[index], newOptions[index + 1]] = [newOptions[index + 1], newOptions[index]];
+            return newOptions;
+        });
     };
 
     // Total credits selected
@@ -488,6 +517,7 @@ export default function CourseSelectionPage() {
     }, [selectedOptions, disabledOptions, allSubjectsMode]);
 
     const handleClearAll = () => {
+        setUndoStack(prev => [...prev, selectedOptions]);
         setSelectedOptions([]);
         setActiveCourseCode(null);
         setSearchTerm('');
@@ -685,11 +715,21 @@ export default function CourseSelectionPage() {
                     )}
 
                     {/* Selected Courses Summary */}
-                    <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.015)] border border-[#eaeaea]/80 flex flex-col overflow-hidden">
-                        <div className="bg-[#a9d6a9] px-6 md:px-8 py-4 flex justify-between items-center shrink-0">
-                            <h2 className="text-2xl font-bold text-[#1f1f1f] flex items-center gap-2">
-                                Selected Courses
-                            </h2>
+                    <div data-tour="courses-review-table" className="w-full flex-1 min-h-0 bg-[#fcfcfc] rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#eaeaea]/80 overflow-hidden flex flex-col mt-4">
+                        <div className="bg-[#a9d6a9] px-6 py-4 shrink-0 flex items-center justify-between">
+                            <h2 className="text-2xl font-bold text-[#1f1f1f]">Selected Courses</h2>
+                            {undoStack.length > 0 && (
+                                <button
+                                    onClick={handleUndo}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-white/60 hover:bg-white text-[#1f1f1f] font-bold text-sm rounded-xl shadow-sm transition-all"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M3 7v6h6" />
+                                        <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+                                    </svg>
+                                    Undo
+                                </button>
+                            )}
                         </div>
 
                         <div className="p-5 md:p-6 flex flex-col gap-4">
@@ -697,12 +737,18 @@ export default function CourseSelectionPage() {
                         <div className="w-full overflow-x-auto custom-scrollbar">
                             {selectedOptions.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center gap-2.5 py-6">
-                                    <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400" />
-                                    <p className="text-sm font-semibold text-gray-400">No courses selected yet. Search above to begin!</p>
+                                    {undoStack.length > 0 ? (
+                                        <p className="text-sm font-semibold text-[#1f1f1f]">All courses have been deleted.</p>
+                                    ) : (
+                                        <>
+                                            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400" />
+                                            <p className="text-sm font-semibold text-gray-400">No courses selected yet. Search above to begin!</p>
+                                        </>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="min-w-[900px] flex flex-col h-full">
-                                    <div className="grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_60px] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0">
+                                    <div className="grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_120px] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0">
                                         <div className="px-4 py-3 text-sm font-bold"></div>
                                         <div className="px-4 py-3 text-sm font-bold">No</div>
                                         <div className="px-4 py-3 text-sm font-bold">Course Code</div>
@@ -710,13 +756,13 @@ export default function CourseSelectionPage() {
                                         <div className="px-4 py-3 text-sm font-bold">Faculty Name</div>
                                         <div className="px-4 py-3 text-sm font-bold">Slot</div>
                                         <div className="px-4 py-3 text-sm font-bold text-center">CR</div>
-                                        <div className="px-4 py-3 text-sm font-bold text-right"></div>
+                                        <div className="px-4 py-3 text-sm font-bold text-right">Actions</div>
                                     </div>
                                     <div className="flex-1 min-h-0 px-0">
                                         {selectedOptions.map((opt, index) => (
                                             <div
                                                 key={opt.id}
-                                                className={`grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_60px] border-b border-[#f0f0f0] items-center transition-colors ${!allSubjectsMode && disabledOptions.has(opt.id) ? 'opacity-50 bg-gray-50' : 'bg-white hover:bg-[#f8f8f8]'}`}
+                                                className={`grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_120px] border-b border-[#f0f0f0] items-center transition-colors ${!allSubjectsMode && disabledOptions.has(opt.id) ? 'opacity-50 bg-gray-50' : 'bg-white hover:bg-[#f8f8f8]'}`}
                                             >
                                                 <div className="px-4 py-4 flex items-center justify-center">
                                                     <input 
@@ -745,13 +791,35 @@ export default function CourseSelectionPage() {
                                                     </div>
                                                 </div>
                                                 <div className="px-4 py-4 text-sm font-bold text-gray-700 text-center">{opt.credits}</div>
-                                                <div className="px-4 py-4 flex items-center justify-end">
+                                                <div className="px-4 py-4 flex items-center justify-end gap-2">
+                                                    <button
+                                                        onClick={() => handleMoveUp(index)}
+                                                        disabled={index <= 0}
+                                                        title="Move up"
+                                                        className={`w-8 h-8 flex items-center justify-center rounded border transition-all ${index <= 0
+                                                            ? 'border-gray-200 text-gray-300 cursor-not-allowed'
+                                                            : 'border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer'
+                                                            }`}
+                                                    >
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 15l-6-6-6 6" /></svg>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleMoveDown(index)}
+                                                        disabled={index === selectedOptions.length - 1}
+                                                        title="Move down"
+                                                        className={`w-8 h-8 flex items-center justify-center rounded border transition-all ${index === selectedOptions.length - 1
+                                                            ? 'border-gray-200 text-gray-300 cursor-not-allowed'
+                                                            : 'border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer'
+                                                            }`}
+                                                    >
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
+                                                    </button>
                                                     <button
                                                         onClick={() => handleRemoveCourse(opt.courseCode)}
-                                                        className="text-gray-400 hover:text-red-500 cursor-pointer p-1.5 hover:bg-red-50 rounded-lg transition-colors"
-                                                        title="Remove course"
+                                                        title="Remove"
+                                                        className="w-8 h-8 flex items-center justify-center rounded border border-red-200 text-red-400 hover:bg-red-50 hover:text-red-600 cursor-pointer transition-all"
                                                     >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                             <path d="M3 6h18" />
                                                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                                                             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
