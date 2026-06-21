@@ -402,7 +402,7 @@ export default function CourseSelectionPage() {
     const { selectedScheme, setSelectedScheme } = usePreferences();
     
     // Feature Flag check
-    let isSimplifiedEnabled: boolean | undefined = true; // Forced true for local testing
+    const isSimplifiedEnabled = useFeatureFlagEnabled(FEATURE_FLAGS.simplifiedFlow);
 
     // Local selections
     const [selectedOptions, setSelectedOptions] = useState<CourseOption[]>([]);
