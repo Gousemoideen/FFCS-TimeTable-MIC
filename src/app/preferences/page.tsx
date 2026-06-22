@@ -34,7 +34,7 @@ import { usePreferences } from '@/lib/PreferencesContext';
 import { fullCourseData } from '@/lib/type';
 import { getPlannerStoredValue, setPlannerStoredValue } from '@/lib/plannerStorage';
 import { FEATURE_FLAGS, isSessionBasedSlotPairingEnabled } from '@/lib/featureFlags';
-import { findMatchingLabSlot } from '@/lib/slots';
+import { findMatchingLabSlot, pairTheoryAndLabSlots } from '@/lib/slots';
 import ModeHelpDialog from '@/components/ModeHelpDialog';
 import { PREFERENCE_TOUR_STEP_EVENT } from '@/components/plannerTourSteps';
 import type { ChennaiDomainCatalog } from '@/lib/chennaiCatalog';
@@ -696,6 +696,21 @@ export default function PreferencesPage() {
                         if (theoryIdx !== -1) {
                             const theoryCourse = mergedExistingCourses[theoryIdx];
                             if (isSessionBasedSlotPairingEnabled()) {
+                                const facultyPairings = new Map<string, Map<string, string>>();
+                                const faculties = new Set<string>();
+                                theoryCourse.courseSlots.forEach(cs => cs.slotFaculties.forEach(f => faculties.add(f.facultyName)));
+                                newCourse.courseSlots.forEach(ls => ls.slotFaculties.forEach(f => faculties.add(f.facultyName)));
+                                
+                                faculties.forEach(facultyName => {
+                                    const theorySlotsForFaculty = theoryCourse.courseSlots
+                                        .filter(cs => cs.slotFaculties.some(f => f.facultyName === facultyName))
+                                        .map(cs => cs.slotName);
+                                    const labSlotsForFaculty = newCourse.courseSlots
+                                        .filter(ls => ls.slotFaculties.some(f => f.facultyName === facultyName))
+                                        .map(ls => ls.slotName);
+                                    facultyPairings.set(facultyName, pairTheoryAndLabSlots(theorySlotsForFaculty, labSlotsForFaculty));
+                                });
+
                                 const mergedCourse: fullCourseData = {
                                     ...theoryCourse,
                                     courseType: 'both',
@@ -704,14 +719,8 @@ export default function PreferencesPage() {
                                     courseSlots: theoryCourse.courseSlots.map(cs => ({
                                         ...cs,
                                         slotFaculties: cs.slotFaculties.map(f => {
-                                            const facultyLabSlots = newCourse.courseSlots
-                                                .filter(ls => ls.slotFaculties.some(lf => lf.facultyName === f.facultyName))
-                                                .map(ls => ls.slotName);
-                                            if (facultyLabSlots.length > 0) {
-                                                const matched = findMatchingLabSlot(cs.slotName, facultyLabSlots);
-                                                return matched ? { ...f, facultyLabSlot: matched } : f;
-                                            }
-                                            return f;
+                                            const matched = facultyPairings.get(f.facultyName)?.get(cs.slotName);
+                                            return matched ? { ...f, facultyLabSlot: matched } : f;
                                         }),
                                     })),
                                 };
@@ -756,6 +765,21 @@ export default function PreferencesPage() {
                         if (labIdx !== -1) {
                             const labCourse = mergedExistingCourses[labIdx];
                             if (isSessionBasedSlotPairingEnabled()) {
+                                const facultyPairings = new Map<string, Map<string, string>>();
+                                const faculties = new Set<string>();
+                                newCourse.courseSlots.forEach(cs => cs.slotFaculties.forEach(f => faculties.add(f.facultyName)));
+                                labCourse.courseSlots.forEach(ls => ls.slotFaculties.forEach(f => faculties.add(f.facultyName)));
+                                
+                                faculties.forEach(facultyName => {
+                                    const theorySlotsForFaculty = newCourse.courseSlots
+                                        .filter(cs => cs.slotFaculties.some(f => f.facultyName === facultyName))
+                                        .map(cs => cs.slotName);
+                                    const labSlotsForFaculty = labCourse.courseSlots
+                                        .filter(ls => ls.slotFaculties.some(f => f.facultyName === facultyName))
+                                        .map(ls => ls.slotName);
+                                    facultyPairings.set(facultyName, pairTheoryAndLabSlots(theorySlotsForFaculty, labSlotsForFaculty));
+                                });
+
                                 const mergedCourse: fullCourseData = {
                                     ...newCourse,
                                     courseType: 'both',
@@ -764,14 +788,8 @@ export default function PreferencesPage() {
                                     courseSlots: newCourse.courseSlots.map(cs => ({
                                         ...cs,
                                         slotFaculties: cs.slotFaculties.map(f => {
-                                            const facultyLabSlots = labCourse.courseSlots
-                                                .filter(ls => ls.slotFaculties.some(lf => lf.facultyName === f.facultyName))
-                                                .map(ls => ls.slotName);
-                                            if (facultyLabSlots.length > 0) {
-                                                const matched = findMatchingLabSlot(cs.slotName, facultyLabSlots);
-                                                return matched ? { ...f, facultyLabSlot: matched } : f;
-                                            }
-                                            return f;
+                                            const matched = facultyPairings.get(f.facultyName)?.get(cs.slotName);
+                                            return matched ? { ...f, facultyLabSlot: matched } : f;
                                         }),
                                     })),
                                 };

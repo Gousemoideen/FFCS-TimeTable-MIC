@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { fullCourseData } from '@/lib/type';
-import { clashMap, findMatchingLabSlot } from '@/lib/slots';
+import { clashMap, findMatchingLabSlot, pairTheoryAndLabSlots } from '@/lib/slots';
 import { isSessionBasedSlotPairingEnabled, FEATURE_FLAGS } from '@/lib/featureFlags';
 import { useFeatureFlagEnabled } from '@posthog/react';
 import { generateTT } from '@/lib/utils';
@@ -130,8 +130,9 @@ const buildPreferenceCoursesFromRows = (rows: FacultyEntry[]): fullCourseData[] 
 
             course.facultySlots.forEach(({ theorySlots, labSlots }, facultyName) => {
                 if (isSessionBasedSlotPairingEnabled()) {
+                    const pairings = pairTheoryAndLabSlots(theorySlots, labSlots);
                     theorySlots.forEach(theorySlot => {
-                        const labSlot = findMatchingLabSlot(theorySlot, labSlots);
+                        const labSlot = pairings.get(theorySlot);
                         if (!theorySlotMap.has(theorySlot)) theorySlotMap.set(theorySlot, []);
                         theorySlotMap.get(theorySlot)!.push({
                             facultyName,
