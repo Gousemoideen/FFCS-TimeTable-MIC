@@ -1453,7 +1453,7 @@ export default function CourseSelectionPage() {
                                 </div>
                             ) : (
                                 <div className="min-w-[900px] flex flex-col h-full">
-                                    <div className="grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_160px] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0">
+                                    <div className="grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_120px] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0">
                                         <div className="px-4 py-3 text-sm font-bold"></div>
                                         <div className="px-4 py-3 text-sm font-bold">No</div>
                                         <div className="px-4 py-3 text-sm font-bold">Course Code</div>
@@ -1467,7 +1467,7 @@ export default function CourseSelectionPage() {
                                         {selectedOptions.map((opt, index) => (
                                             <div
                                                 key={opt.id}
-                                                className={`grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_160px] border-b border-[#f0f0f0] items-center transition-colors ${!allSubjectsMode && disabledOptions.has(opt.id) ? 'opacity-50 bg-gray-50' : 'bg-white hover:bg-[#3B5BDB]/5'}`}
+                                                className={`grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_120px] border-b border-[#f0f0f0] items-center transition-colors ${!allSubjectsMode && disabledOptions.has(opt.id) ? 'opacity-50 bg-gray-50' : 'bg-white hover:bg-[#f8f8f8]'}`}
                                             >
                                                 <div className="px-4 py-4 flex items-center justify-center">
                                                     <input 
@@ -1486,55 +1486,17 @@ export default function CourseSelectionPage() {
                                                     />
                                                 </div>
                                                 <div className="px-4 py-4 text-sm font-semibold text-[#1f1f1f]">{index + 1}</div>
-                                                <div 
-                                                    onClick={() => setActiveCourseCode(opt.courseCode)}
-                                                    className="px-4 py-4 text-sm font-semibold font-mono text-[#3B5BDB] hover:underline cursor-pointer"
-                                                    title="Click to edit course slots/faculties"
-                                                >
-                                                    {opt.courseCode}
-                                                </div>
-                                                <div 
-                                                    onClick={() => setActiveCourseCode(opt.courseCode)}
-                                                    className="px-4 py-4 text-sm leading-relaxed text-[#1f1f1f] hover:text-[#3B5BDB] cursor-pointer"
-                                                    title="Click to edit course slots/faculties"
-                                                >
-                                                    {opt.courseName}
-                                                </div>
-                                                <div 
-                                                    onClick={() => setActiveCourseCode(opt.courseCode)}
-                                                    className="px-4 py-4 text-sm leading-relaxed text-[#1f1f1f] hover:text-[#3B5BDB] cursor-pointer"
-                                                    title="Click to edit course slots/faculties"
-                                                >
-                                                    {opt.facultyName}
-                                                </div>
-                                                <div 
-                                                    onClick={() => setActiveCourseCode(opt.courseCode)}
-                                                    className="px-4 py-4 text-sm font-semibold text-[#1f1f1f] hover:text-[#3B5BDB] cursor-pointer"
-                                                    title="Click to edit course slots/faculties"
-                                                >
+                                                <div className="px-4 py-4 text-sm font-semibold font-mono text-[#1f1f1f]">{opt.courseCode}</div>
+                                                <div className="px-4 py-4 text-sm leading-relaxed text-[#1f1f1f]">{opt.courseName}</div>
+                                                <div className="px-4 py-4 text-sm leading-relaxed text-[#1f1f1f]">{opt.facultyName}</div>
+                                                <div className="px-4 py-4 text-sm font-semibold text-[#1f1f1f]">
                                                     <div className="flex flex-col gap-0.5">
                                                         {opt.theorySlot && <span className="font-bold">T: {opt.theorySlot}</span>}
                                                         {opt.labSlot && <span className="font-bold">L: {opt.labSlot}</span>}
                                                     </div>
                                                 </div>
-                                                <div 
-                                                    onClick={() => setActiveCourseCode(opt.courseCode)}
-                                                    className="px-4 py-4 text-sm font-bold text-gray-700 text-center hover:text-[#3B5BDB] cursor-pointer"
-                                                    title="Click to edit course slots/faculties"
-                                                >
-                                                    {opt.credits}
-                                                </div>
+                                                <div className="px-4 py-4 text-sm font-bold text-gray-700 text-center">{opt.credits}</div>
                                                 <div className="px-4 py-4 flex items-center justify-end gap-2">
-                                                    <button
-                                                        onClick={() => setActiveCourseCode(opt.courseCode)}
-                                                        title="Edit Faculty / Slot"
-                                                        className="w-8 h-8 flex items-center justify-center rounded border border-[#D0D5F2] text-[#3B5BDB] hover:bg-[#3B5BDB]/5 cursor-pointer transition-all shrink-0"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                            <path d="M12 20h9" />
-                                                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                                                        </svg>
-                                                    </button>
                                                     <button
                                                         onClick={() => handleMoveUp(index)}
                                                         disabled={index <= 0}
