@@ -1270,7 +1270,8 @@ export default function CourseSelectionPage() {
                                     }}
                                     onKeyDown={handleKeyDown}
                                     placeholder="Search by code or title..."
-                                    className="w-full bg-[#FAFAFA] border border-[#eadcc5]/80 rounded-2xl pl-11 pr-12 py-3.5 text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-[#3B5BDB]/60 transition-all duration-200 focus:bg-white focus:border-[#3B5BDB]/60 focus:shadow-[0_0_15px_rgba(59,91,219,0.08)]"
+                                    style={{ paddingLeft: '2.75rem', paddingRight: '3rem' }}
+                                    className="w-full bg-[#FAFAFA] border border-[#eadcc5]/80 rounded-2xl py-3.5 text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-[#3B5BDB]/60 transition-all duration-200 focus:bg-white focus:border-[#3B5BDB]/60 focus:shadow-[0_0_15px_rgba(59,91,219,0.08)]"
                                 />
                                 {searchTerm && (
                                     <button
@@ -1290,7 +1291,6 @@ export default function CourseSelectionPage() {
                                     <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.1)] z-30 max-h-72 overflow-y-auto custom-scrollbar p-2 animate-in fade-in slide-in-from-top-2 duration-200">
                                         {searchResults.map((result, idx) => {
                                             const isFocused = idx === focusedIndex;
-                                            const facultyCount = courseFacultyCounts.get(result.code) || 0;
                                             return (
                                                 <button
                                                     key={result.code}
@@ -1300,22 +1300,17 @@ export default function CourseSelectionPage() {
                                                         setFocusedIndex(-1);
                                                     }}
                                                     onMouseEnter={() => setFocusedIndex(idx)}
-                                                    className={`w-full text-left px-4 py-3 rounded-xl transition-colors flex items-center justify-between gap-3 cursor-pointer ${
+                                                    className={`w-full text-left px-4 py-3 rounded-xl transition-colors flex flex-col gap-0.5 cursor-pointer ${
                                                         isFocused
                                                             ? 'bg-[#3B5BDB]/10 text-black border border-[#3B5BDB]/20'
                                                             : 'hover:bg-gray-50 border border-transparent'
                                                     }`}
                                                 >
-                                                    <div className="flex flex-col gap-0.5 min-w-0">
-                                                        <span className="font-extrabold text-xs text-[#3B5BDB] uppercase tracking-wider">
-                                                            {highlightMatch(result.code, searchTerm)}
-                                                        </span>
-                                                        <span className="font-bold text-sm text-gray-900 line-clamp-1">
-                                                            {highlightMatch(result.title, searchTerm)}
-                                                        </span>
-                                                    </div>
-                                                    <span className="shrink-0 text-[10px] font-bold px-2 py-1 bg-gray-100 text-gray-600 rounded-full border border-gray-200">
-                                                        {facultyCount} {facultyCount === 1 ? 'Faculty' : 'Faculties'}
+                                                    <span className="font-extrabold text-xs text-[#3B5BDB] uppercase tracking-wider">
+                                                        {highlightMatch(result.code, searchTerm)}
+                                                    </span>
+                                                    <span className="font-bold text-sm text-gray-900 line-clamp-1">
+                                                        {highlightMatch(result.title, searchTerm)}
                                                     </span>
                                                 </button>
                                             );
