@@ -19,7 +19,7 @@ import { clearPlannerClientCache } from '@/lib/clientCache';
 import LoginModal from '@/components/loginPopup';
 import SmallFooter from '@/components/SmallFooter';
 import { getSlotViewPayload } from '@/lib/slot-view';
-import { clashMap, findMatchingLabSlot } from '@/lib/slots';
+import { clashMap, findMatchingLabSlot, pairTheoryAndLabSlots } from '@/lib/slots';
 import { isTheoryType, isLabType, getCourseCredits } from '@/lib/chennaiCatalog';
 import chennaiCourses from '@/data/all_data_chennai';
 import { fullCourseData, timetableDisplayData } from '@/lib/type';
@@ -342,8 +342,9 @@ const buildPreferenceCoursesFromRows = (rows: FacultyEntry[]): fullCourseData[] 
             const theorySlotMap = new Map<string, { facultyName: string; facultyLabSlot?: string }[]>();
 
             course.facultySlots.forEach(({ theorySlots, labSlots }, facultyName) => {
+                const pairings = pairTheoryAndLabSlots(theorySlots, labSlots);
                 theorySlots.forEach(theorySlot => {
-                    const labSlot = findMatchingLabSlot(theorySlot, labSlots);
+                    const labSlot = pairings.get(theorySlot);
                     if (!theorySlotMap.has(theorySlot)) theorySlotMap.set(theorySlot, []);
                     theorySlotMap.get(theorySlot)!.push({
                         facultyName,
@@ -946,12 +947,16 @@ export default function CourseSelectionPage() {
             const labRecords = facRecords.filter((r: any) => isLabType(r.TYPE));
 
             if (theoryRecords.length > 0 && labRecords.length > 0) {
+                const theorySlots = theoryRecords.map((tr: any) => tr.SLOT);
+                const labSlots = labRecords.map((lr: any) => lr.SLOT);
+                const pairings = pairTheoryAndLabSlots(theorySlots, labSlots);
                 const pairedLabSlots = new Set<string>();
 
                 theoryRecords.forEach((tr: any) => {
-                    const labSlots = labRecords.map((lr: any) => lr.SLOT);
-                    const matchedLabSlotName = findMatchingLabSlot(tr.SLOT, labSlots);
-                    const matchingLabRecord = labRecords.find((lr: any) => lr.SLOT === matchedLabSlotName);
+                    const matchedLabSlotName = pairings.get(tr.SLOT);
+                    const matchingLabRecord = matchedLabSlotName 
+                        ? labRecords.find((lr: any) => lr.SLOT === matchedLabSlotName)
+                        : undefined;
 
                     if (matchingLabRecord) {
                         pairedLabSlots.add(matchingLabRecord.SLOT);
@@ -1161,7 +1166,41 @@ export default function CourseSelectionPage() {
     // Total credits selected
     const totalCredits = useMemo(() => {
         const activeOptions = allSubjectsMode ? selectedOptions : selectedOptions.filter(opt => !disabledOptions.has(opt.id));
-        return activeOptions.reduce((acc, curr) => acc + curr.credits, 0);
+        const seenCourseCodes = new Set<string>();
+        return activeOptions.reduce((acc, curr) => {
+            if (seenCourseCodes.has(curr.courseCode)) {
+                return acc;
+            }
+            seenCourseCodes.add(curr.courseCode);
+            return acc + curr.credits;
+        }, 0);
+    }, [selectedOptions, disabledOptions, allSubjectsMode]);
+
+    // Calculate clashes among active options
+    const clashingIds = useMemo(() => {
+        const activeOptions = allSubjectsMode ? selectedOptions : selectedOptions.filter(opt => !disabledOptions.has(opt.id));
+        const clashes = new Set<string>();
+
+        for (let i = 0; i < activeOptions.length; i++) {
+            for (let j = i + 1; j < activeOptions.length; j++) {
+                const optA = activeOptions[i];
+                const optB = activeOptions[j];
+
+                if (optA.courseCode === optB.courseCode) continue;
+
+                let hasClash = false;
+                if (optA.theorySlot && optB.theorySlot && doSlotsClash(optA.theorySlot, optB.theorySlot)) hasClash = true;
+                else if (optA.labSlot && optB.labSlot && doSlotsClash(optA.labSlot, optB.labSlot)) hasClash = true;
+                else if (optA.theorySlot && optB.labSlot && doSlotsClash(optA.theorySlot, optB.labSlot)) hasClash = true;
+                else if (optA.labSlot && optB.theorySlot && doSlotsClash(optA.labSlot, optB.theorySlot)) hasClash = true;
+
+                if (hasClash) {
+                    clashes.add(optA.id);
+                    clashes.add(optB.id);
+                }
+            }
+        }
+        return clashes;
     }, [selectedOptions, disabledOptions, allSubjectsMode]);
 
     const handleClearAll = () => {
@@ -1402,7 +1441,7 @@ export default function CourseSelectionPage() {
                         <div className="bg-white rounded-3xl p-5 md:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] border border-[#eaeaea]/80 flex flex-col gap-4 animate-fade-slide-down">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex-1 flex flex-col gap-1">
-                                    <span className="text-[13px] font-bold text-[#3B5BDB] uppercase tracking-wider">{activeCourseCode}</span>
+                                    <span className="text-[11px] font-bold text-[#3B5BDB] uppercase">{activeCourseCode}</span>
                                     <h3 className="text-xl font-bold text-black leading-tight">{activeCourseName}</h3>
                                 </div>
                                 <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -1440,11 +1479,9 @@ export default function CourseSelectionPage() {
                                             setActiveCourseCode(null);
                                             setSearchTerm('');
                                         }}
-                                        className="w-7 h-7 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 hover:border-red-100 transition-all cursor-pointer text-sm font-bold shrink-0"
-                                        title="Close"
-                                        aria-label="Close"
+                                        className="text-[13px] font-bold text-gray-400 hover:text-gray-600 transition-colors cursor-pointer shrink-0"
                                     >
-                                        ✕
+                                        Close
                                     </button>
                                 </div>
                             </div>
@@ -1480,12 +1517,12 @@ export default function CourseSelectionPage() {
                                                     <div className="flex flex-col gap-1 mt-2.5">
                                                         {opt.theorySlot && (
                                                             <span className="text-[10px] font-extrabold px-2 py-0.5 bg-[#E1F9E9] border border-[#c3f2d2] rounded-md text-emerald-800 flex items-center gap-1 w-max">
-                                                                T: {opt.theorySlot}
+                                                                {opt.theorySlot}
                                                             </span>
                                                         )}
                                                         {opt.labSlot && (
                                                             <span className="text-[10px] font-extrabold px-2 py-0.5 bg-[#FFF2BF] border border-[#fef08a] rounded-md text-amber-800 flex items-center gap-1 w-max">
-                                                                L: {opt.labSlot}
+                                                                {opt.labSlot}
                                                             </span>
                                                         )}
                                                     </div>
@@ -1511,10 +1548,10 @@ export default function CourseSelectionPage() {
                                                     <span className="font-bold text-sm text-gray-900">
                                                         {pendingOption.facultyName}
                                                     </span>
-                                                    <span className="text-xs text-gray-500">
-                                                        ({pendingOption.theorySlot ? `T: ${pendingOption.theorySlot}` : ''}
+                                                    <span className="text-xs text-black-600">
+                                                        ({pendingOption.theorySlot ? `${pendingOption.theorySlot}` : ''}
                                                          {pendingOption.theorySlot && pendingOption.labSlot ? ' + ' : ''}
-                                                         {pendingOption.labSlot ? `L: ${pendingOption.labSlot}` : ''})
+                                                         {pendingOption.labSlot ? `${pendingOption.labSlot}` : ''})
                                                     </span>
                                                 </>
                                             ) : (
@@ -1542,22 +1579,20 @@ export default function CourseSelectionPage() {
                                         disabled={!pendingOption}
                                         onClick={() => {
                                             if (pendingOption) {
-                                                // Check if it's already selected to avoid duplicating toggles
                                                 const exists = selectedOptions.some(o => o.id === pendingOption.id);
-                                                if (!exists) {
-                                                    setSelectedOptions(prev => {
-                                                        const filtered = prev.filter(o => o.courseCode !== pendingOption.courseCode);
-                                                        return [...filtered, pendingOption];
-                                                    });
+                                                if (exists) {
+                                                    setSelectedOptions(prev => prev.filter(o => o.id !== pendingOption.id));
+                                                    showToast(`Removed ${pendingOption.facultyName} from ${activeCourseCode}`, 'success');
+                                                } else {
+                                                    setSelectedOptions(prev => [...prev, pendingOption]);
+                                                    showToast(`Selected ${pendingOption.facultyName} for ${activeCourseCode}`, 'success');
                                                 }
-                                                showToast(`Selected ${pendingOption.facultyName} for ${activeCourseCode}`, 'success');
-                                                setActiveCourseCode(null);
                                                 setPendingOption(null);
                                             }
                                         }}
-                                        className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+                                        className={`px-5 py-2.5 font-bold text-xs rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed ${pendingOption && selectedOptions.some(o => o.id === pendingOption.id) ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:bg-gray-200 disabled:text-gray-400'}`}
                                     >
-                                        Select
+                                        {pendingOption && selectedOptions.some(o => o.id === pendingOption.id) ? 'Remove' : 'Select'}
                                     </button>
                                 </div>
                             </div>
@@ -1599,7 +1634,19 @@ export default function CourseSelectionPage() {
                             ) : (
                                 <div className="min-w-[900px] flex flex-col h-full">
                                     <div className="grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_120px] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0">
-                                        <div className="px-4 py-3 text-sm font-bold"></div>
+                                        <div className="px-4 py-3 text-sm font-bold flex items-center justify-center">
+                                            <div className="relative group flex items-center justify-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={allSubjectsMode}
+                                                    onChange={(e) => setAllSubjectsMode(e.target.checked)}
+                                                    className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600 focus:ring-offset-0 transition-colors cursor-pointer"
+                                                />
+                                                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-max bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-50">
+                                                    All subjects mode
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div className="px-4 py-3 text-sm font-bold">No</div>
                                         <div className="px-4 py-3 text-sm font-bold">Course Code</div>
                                         <div className="px-4 py-3 text-sm font-bold">Course Name</div>
@@ -1612,7 +1659,7 @@ export default function CourseSelectionPage() {
                                         {selectedOptions.map((opt, index) => (
                                             <div
                                                 key={opt.id}
-                                                className={`grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_120px] border-b border-[#f0f0f0] items-center transition-colors ${!allSubjectsMode && disabledOptions.has(opt.id) ? 'opacity-50 bg-gray-50' : 'bg-white hover:bg-[#f8f8f8]'}`}
+                                                className={`grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_120px] border-b border-[#f0f0f0] items-center transition-colors ${!allSubjectsMode && disabledOptions.has(opt.id) ? 'opacity-50 bg-gray-50' : clashingIds.has(opt.id) && (!disabledOptions.has(opt.id) || allSubjectsMode) ? 'bg-red-50 hover:bg-red-100 text-red-900' : 'bg-white hover:bg-[#f8f8f8]'}`}
                                             >
                                                 <div className="px-4 py-4 flex items-center justify-center">
                                                     <input 
@@ -1761,13 +1808,36 @@ export default function CourseSelectionPage() {
                     {/* Table grid preview */}
                     <div className="w-full overflow-x-auto border border-gray-100 rounded-2xl bg-[#fbfbfb]">
                         {(selectedOptions.length > 0 && totalCombinations === 0) ? (
-                            <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center p-6 gap-4 animate-lucid-fade-up">
-                                <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center border border-red-100 text-red-500 text-2xl font-bold" />
-                                <div className="flex flex-col gap-1.5">
-                                    <h3 className="font-extrabold text-black">No Valid Combinations Found</h3>
-                                    <p className="text-xs text-gray-500 max-w-xs leading-relaxed">
-                                        Your selected courses are clashing in their timeslots. Try choosing a different faculty/slot combination.
+                            <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-6 md:p-8 gap-5 animate-lucid-fade-up bg-white rounded-2xl max-w-xl mx-auto">
+                                <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-red-50 border border-red-100 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-500 animate-pulse">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <div className="absolute -top-1 -right-1 flex h-3 w-3">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex flex-col gap-1.5 max-w-sm">
+                                    <h3 className="font-extrabold text-black text-lg tracking-tight">No Valid Combinations Found</h3>
+                                    <p className="text-xs text-gray-500 leading-relaxed">
+                                        Your selected courses clash in their timeslots. Try choosing a different faculty/slot combination for one of the clashing courses below.
                                     </p>
+                                </div>
+                                
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={handleClearAll}
+                                        className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-pink-500 text-blue font-bold text-xs rounded-xl hover:from-red-600 hover:to-pink-600 transition-all shadow-md shadow-red-200/50 flex items-center gap-1.5 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M3 6h18" />
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                        </svg>
+                                        Reset Selection
+                                    </button>
                                 </div>
                             </div>
                         ) : (
