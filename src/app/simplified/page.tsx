@@ -1008,6 +1008,18 @@ export default function CourseSelectionPage() {
         return options;
     }, [activeCourseRecords]);
 
+    // Dynamically calculate grid columns based on teacher options count
+    const gridColsClass = useMemo(() => {
+        const count = activeCourseOptions.length;
+        if (count <= 4) {
+            return "grid-cols-1 sm:grid-cols-2";
+        } else if (count <= 8) {
+            return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3";
+        } else {
+            return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
+        }
+    }, [activeCourseOptions.length]);
+
     // Live timetable generation combination details
     const currentCombination = useMemo(() => {
         return timetableData?.[currentIndex] || [];
@@ -1364,10 +1376,9 @@ export default function CourseSelectionPage() {
                     {activeCourseCode && (
                         <div className="bg-white rounded-3xl p-5 md:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] border border-[#eaeaea]/80 flex flex-col gap-4 animate-fade-slide-down">
                             <div className="flex justify-between items-start gap-4">
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-bold text-black leading-tight">
-                                        <span className="text-[#3B5BDB]">{activeCourseCode}</span> - {activeCourseName}
-                                    </h3>
+                                <div className="flex-1 flex flex-col gap-1">
+                                    <span className="text-xs font-bold text-[#3B5BDB] uppercase tracking-wider">{activeCourseCode}</span>
+                                    <h3 className="text-xl font-bold text-black leading-tight">{activeCourseName}</h3>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -1385,7 +1396,7 @@ export default function CourseSelectionPage() {
                             <div className="w-full h-px bg-gray-100" />
 
                             {/* Slot Cards Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pr-1">
+                            <div className={`grid ${gridColsClass} gap-3 pr-1`}>
                                 {activeCourseOptions.length === 0 ? (
                                     <p className="text-sm font-medium text-gray-400 text-center py-4 col-span-2">No faculties listed for this course.</p>
                                 ) : (
