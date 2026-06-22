@@ -666,8 +666,17 @@ export default function LandingPage() {
               })}
             </div>
 
-            <div className="f-block f-credits">
-              Built with ❤️ by Microsoft Innovations Club
+            <div className="f-block f-credits flex flex-col justify-center items-center gap-1 py-2">
+              <span>Built with ❤️ by Microsoft Innovations Club</span>
+              <div className="flex gap-4">
+                <Link href="/privacy" className="text-xs text-[#3B5BDB] hover:underline font-bold tracking-widest uppercase">
+                  Privacy Policy
+                </Link>
+                <span className="text-gray-300">|</span>
+                <Link href="/terms" className="text-xs text-[#3B5BDB] hover:underline font-bold tracking-widest uppercase">
+                  Terms of Service
+                </Link>
+              </div>
             </div>
 
             <div className="f-block f-updates" style={{ padding: '8px' }}>
