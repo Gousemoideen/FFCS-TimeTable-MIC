@@ -15,6 +15,20 @@ import { exportToPDF } from '@/lib/exportToPDF';
 import { generateTT } from '@/lib/utils';
 import { getSlotViewPayload } from '@/lib/slot-view';
 import { getCourseCredits } from '@/lib/chennaiCatalog';
+import chennaiCourses from '@/data/all_data_chennai';
+
+/* ── Venue lookup from raw data ── */
+const _venueIndex = new Map<string, string>();
+chennaiCourses.forEach((r) => {
+    if ((r as any).VENUE) _venueIndex.set(`${r.CODE}|${r.SLOT}|${r.FACULTY}`, (r as any).VENUE);
+});
+function lookupVenue(courseCode: string, slot: string, facultyName: string): string {
+    const key = `${courseCode}|${slot}|${facultyName}`;
+    if (_venueIndex.has(key)) return _venueIndex.get(key)!;
+    const firstSlot = slot.split('+')[0]?.trim();
+    const partialKey = `${courseCode}|${firstSlot}|${facultyName}`;
+    return _venueIndex.get(partialKey) || 'TBD';
+}
 import { fullCourseData, timetableDisplayData } from '@/lib/type';
 import { clearPlannerClientCache } from '@/lib/clientCache';
 import { getShortCourseName } from '@/lib/courseDisplay';
@@ -283,19 +297,21 @@ export default function TimetablePage() {
 
     const currentTT = useMemo(() => timetableData?.[currentIndex] || [], [timetableData, currentIndex]);
     const selectedCourses = useMemo(() => {
-        const courseMap = new Map<string, { courseName: string; facultyName: string; slots: string[]; credits: number }>();
+        const courseMap = new Map<string, { courseName: string; facultyName: string; slots: string[]; venues: string[]; credits: number }>();
         currentTT.forEach((slot) => {
             if (!courseMap.has(slot.courseCode)) {
                 courseMap.set(slot.courseCode, {
                     courseName: slot.courseName,
                     facultyName: slot.facultyName,
                     slots: [],
+                    venues: [],
                     credits: 0,
                 });
             }
             const info = courseMap.get(slot.courseCode)!;
             if (!info.slots.includes(slot.slotName)) {
                 info.slots.push(slot.slotName);
+                info.venues.push(slot.venue || 'TBD');
                 
                 // Calculate credits for this component
                 if (slot.courseCode.includes('__')) {
@@ -391,6 +407,7 @@ export default function TimetablePage() {
                 courseCode: s.courseCode,
                 courseName: s.courseName,
                 facultyName: s.facultyName,
+                venue: s.venue || 'TBD',
             }));
 
             const saveAsNew = options?.saveAsNew ?? (saveOption === 'new');
@@ -554,6 +571,7 @@ export default function TimetablePage() {
                     courseCode: s.courseCode,
                     courseName: s.courseName,
                     facultyName: s.facultyName,
+                    venue: s.venue || 'TBD',
                 }));
                 await axios.patch(`/api/timetables/${editingTimetableId}`, {
                     slots: slotsData,
@@ -731,8 +749,11 @@ export default function TimetablePage() {
 
             <div className="h-full px-[clamp(12px,1.5vw,24px)] pt-[clamp(10px,1vh,18px)] pb-40 md:pb-29">
                 <div className="w-full max-w-450 h-full mx-auto flex flex-col min-h-0">
-                    <div data-tour="timetable-intro" className="flex items-center gap-4 px-2 pt-4.5 pb-2 shrink-0">
+                    <div data-tour="timetable-intro" className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4 px-2 pt-4.5 pb-2 shrink-0">
                         <h1 className="text-[24px] font-bold text-black">Timetables Generated</h1>
+                        <p className="text-[11px] sm:text-[13px] text-gray-500 font-medium italic">
+                            *Click on the slot to view more details of the subject...
+                        </p>
                     </div>
 
                     {/* Main Table Container */}
@@ -984,7 +1005,7 @@ export default function TimetablePage() {
                                             <td className="px-5 py-4 text-[16px] font-medium text-black">{code}</td>
                                             <td className={`px-5 py-4 font-medium text-black ${info.courseName.length > 40 ? 'text-[13px]' : 'text-[16px]'}`}>{info.courseName}</td>
                                             <td className={`px-5 py-4 font-medium text-black ${info.facultyName.length > 25 ? 'text-[13px]' : 'text-[16px]'}`}>{info.facultyName}</td>
-                                            <td className="px-5 py-4 text-[16px] font-medium text-black">TBD</td>
+                                            <td className="px-5 py-4 text-[16px] font-medium text-black whitespace-pre-wrap">{info.venues.join('\n')}</td>
                                             <td className="px-5 py-4 text-[16px] font-medium text-black">{info.credits}</td>
                                         </tr>
                                     ))}
@@ -1071,7 +1092,13 @@ export default function TimetablePage() {
                             </p>
                             <p className="text-[16px] leading-[1.35] text-black">
                                 <span className="font-black">Classroom:</span>{' '}
-                                <span className="font-semibold text-black/75">TBD</span>
+                                <span className="font-semibold text-black/75">
+                                    {(() => {
+                                        const v = selectedSlot.venue;
+                                        if (v && v !== 'TBD') return v;
+                                        return lookupVenue(selectedSlot.courseCode, selectedSlot.slotName, selectedSlot.facultyName);
+                                    })()}
+                                </span>
                             </p>
                         </div>
                     </div>

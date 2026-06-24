@@ -11,6 +11,8 @@ type CourseOption = {
     slot?: string;
     faculty?: string;
     labSlot?: string;
+    venue?: string;
+    venueLab?: string;
 };
 
 type CourseCatalog = Record<string, Record<string, CourseOption[]>>;
@@ -32,6 +34,7 @@ function parseChennaiCoursesLegacy(courses: typeof chennaiCourses): CourseCatalo
         chennaiCategoryData[category][courseKey].push({
             slot: record.SLOT,
             faculty: record.FACULTY,
+            venue: (record as any).VENUE || 'TBD',
         });
     });
     return chennaiCategoryData;
@@ -55,6 +58,7 @@ function parseChennaiCoursesNew(courses: typeof chennaiCourses): CourseCatalog {
             options.push({
                 slot: record.SLOT?.trim(),
                 faculty: record.FACULTY?.trim(),
+                venue: (record as any).VENUE?.trim() || 'TBD',
             });
         }
     }
@@ -122,6 +126,8 @@ export default function CourseSelector({
                 {
                     facultyName: option.faculty || '',
                     facultyLabSlot: option.labSlot,
+                    venue: option.venue || 'TBD',
+                    venueLab: option.venueLab,
                 },
             ],
         }));

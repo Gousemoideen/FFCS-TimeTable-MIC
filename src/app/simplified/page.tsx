@@ -26,6 +26,19 @@ import { fullCourseData, timetableDisplayData } from '@/lib/type';
 import { exportToPDF } from '@/lib/exportToPDF';
 import { getShortCourseName } from '@/lib/courseDisplay';
 
+/* ── Venue lookup from raw data ── */
+const _venueIndex = new Map<string, string>();
+chennaiCourses.forEach((r) => {
+    if ((r as any).VENUE) _venueIndex.set(`${r.CODE}|${r.SLOT}|${r.FACULTY}`, (r as any).VENUE);
+});
+function lookupVenue(courseCode: string, slot: string, facultyName: string): string {
+    const key = `${courseCode}|${slot}|${facultyName}`;
+    if (_venueIndex.has(key)) return _venueIndex.get(key)!;
+    const firstSlot = slot.split('+')[0]?.trim();
+    const partialKey = `${courseCode}|${firstSlot}|${facultyName}`;
+    return _venueIndex.get(partialKey) || 'TBD';
+}
+
 // Types
 type FacultyEntry = {
     uid: string;
@@ -34,6 +47,7 @@ type FacultyEntry = {
     courseName: string;
     slot: string;
     facultyName: string;
+    venue?: string;
 };
 
 type CourseOption = {
@@ -45,6 +59,8 @@ type CourseOption = {
     labSlot?: string;
     credits: number;
     type: 'th' | 'lab' | 'both';
+    venue?: string;
+    venueLab?: string;
 };
 
 type HighlightedCell = {
@@ -275,7 +291,8 @@ const optionsToFacultyEntries = (selectedOptions: CourseOption[]): FacultyEntry[
                 courseCode: opt.courseCode,
                 courseName: opt.courseName,
                 slot: opt.theorySlot,
-                facultyName: opt.facultyName
+                facultyName: opt.facultyName,
+                venue: opt.venue || 'TBD'
             });
         }
         if (opt.labSlot) {
@@ -285,7 +302,8 @@ const optionsToFacultyEntries = (selectedOptions: CourseOption[]): FacultyEntry[
                 courseCode: opt.courseCode,
                 courseName: opt.courseName,
                 slot: opt.labSlot,
-                facultyName: opt.facultyName
+                facultyName: opt.facultyName,
+                venue: opt.venueLab || 'TBD'
             });
         }
     });
@@ -297,7 +315,7 @@ const buildPreferenceCoursesFromRows = (rows: FacultyEntry[]): fullCourseData[] 
     const coursesMap = new Map<string, {
         courseCode: string;
         courseName: string;
-        facultySlots: Map<string, { theorySlots: string[]; labSlots: string[] }>;
+        facultySlots: Map<string, { theorySlots: string[]; labSlots: string[]; venues: Map<string, string> }>;
     }>();
 
     rows.forEach(row => {
@@ -312,7 +330,7 @@ const buildPreferenceCoursesFromRows = (rows: FacultyEntry[]): fullCourseData[] 
         const courseGroup = coursesMap.get(row.courseCode)!;
 
         if (!courseGroup.facultySlots.has(row.facultyName)) {
-            courseGroup.facultySlots.set(row.facultyName, { theorySlots: [], labSlots: [] });
+            courseGroup.facultySlots.set(row.facultyName, { theorySlots: [], labSlots: [], venues: new Map() });
         }
 
         const fs = courseGroup.facultySlots.get(row.facultyName)!;
@@ -320,6 +338,9 @@ const buildPreferenceCoursesFromRows = (rows: FacultyEntry[]): fullCourseData[] 
             if (!fs.labSlots.includes(row.slot)) fs.labSlots.push(row.slot);
         } else {
             if (!fs.theorySlots.includes(row.slot)) fs.theorySlots.push(row.slot);
+        }
+        if (row.venue) {
+            fs.venues.set(row.slot, row.venue);
         }
     });
 
@@ -339,9 +360,9 @@ const buildPreferenceCoursesFromRows = (rows: FacultyEntry[]): fullCourseData[] 
         else courseType = 'th';
 
         if (courseType === 'both') {
-            const theorySlotMap = new Map<string, { facultyName: string; facultyLabSlot?: string }[]>();
+            const theorySlotMap = new Map<string, { facultyName: string; facultyLabSlot?: string; venue?: string; venueLab?: string }[]>();
 
-            course.facultySlots.forEach(({ theorySlots, labSlots }, facultyName) => {
+            course.facultySlots.forEach(({ theorySlots, labSlots, venues }, facultyName) => {
                 const pairings = pairTheoryAndLabSlots(theorySlots, labSlots);
                 theorySlots.forEach(theorySlot => {
                     const labSlot = pairings.get(theorySlot);
@@ -349,12 +370,17 @@ const buildPreferenceCoursesFromRows = (rows: FacultyEntry[]): fullCourseData[] 
                     theorySlotMap.get(theorySlot)!.push({
                         facultyName,
                         ...(labSlot ? { facultyLabSlot: labSlot } : {}),
+                        venue: venues.get(theorySlot) || 'TBD',
+                        ...(labSlot ? { venueLab: venues.get(labSlot) || 'TBD' } : {}),
                     });
                 });
                 if (theorySlots.length === 0) {
                     labSlots.forEach(labSlot => {
                         if (!theorySlotMap.has(labSlot)) theorySlotMap.set(labSlot, []);
-                        theorySlotMap.get(labSlot)!.push({ facultyName });
+                        theorySlotMap.get(labSlot)!.push({
+                            facultyName,
+                            venue: venues.get(labSlot) || 'TBD',
+                        });
                     });
                 }
             });
@@ -372,12 +398,15 @@ const buildPreferenceCoursesFromRows = (rows: FacultyEntry[]): fullCourseData[] 
                 })),
             });
         } else {
-            const slotMap = new Map<string, Set<string>>();
-            course.facultySlots.forEach(({ theorySlots, labSlots }, facultyName) => {
+            const slotMap = new Map<string, { facultyName: string; venue?: string }[]>();
+            course.facultySlots.forEach(({ theorySlots, labSlots, venues }, facultyName) => {
                 const slots = courseType === 'lab' ? labSlots : theorySlots;
                 slots.forEach(slot => {
-                    if (!slotMap.has(slot)) slotMap.set(slot, new Set());
-                    slotMap.get(slot)!.add(facultyName);
+                    if (!slotMap.has(slot)) slotMap.set(slot, []);
+                    slotMap.get(slot)!.push({
+                        facultyName,
+                        venue: venues.get(slot) || 'TBD',
+                    });
                 });
             });
 
@@ -386,9 +415,9 @@ const buildPreferenceCoursesFromRows = (rows: FacultyEntry[]): fullCourseData[] 
                 courseType,
                 courseCode: course.courseCode,
                 courseName: course.courseName,
-                courseSlots: Array.from(slotMap.entries()).map(([slotName, facultySet]) => ({
+                courseSlots: Array.from(slotMap.entries()).map(([slotName, faculties]) => ({
                     slotName,
-                    slotFaculties: Array.from(facultySet).map(facultyName => ({ facultyName })),
+                    slotFaculties: faculties,
                 })),
             });
         }
@@ -549,6 +578,7 @@ export default function CourseSelectionPage() {
                 courseCode: s.courseCode,
                 courseName: s.courseName,
                 facultyName: s.facultyName,
+                venue: s.venue || 'TBD',
             }));
 
             if (editingTimetableId) {
@@ -708,6 +738,7 @@ export default function CourseSelectionPage() {
                     courseCode: s.courseCode,
                     courseName: s.courseName,
                     facultyName: s.facultyName,
+                    venue: s.venue || 'TBD',
                 }));
                 await axios.patch(`/api/timetables/${editingTimetableId}`, {
                     slots: slotsData,
@@ -786,7 +817,9 @@ export default function CourseSelectionPage() {
                                 theorySlot: tr ? slot.slotName : undefined,
                                 labSlot: fac.facultyLabSlot || undefined,
                                 credits,
-                                type
+                                type,
+                                venue: fac.venue || 'TBD',
+                                venueLab: fac.venueLab || 'TBD',
                             });
                         });
                     });
@@ -968,7 +1001,9 @@ export default function CourseSelectionPage() {
                             theorySlot: tr.SLOT,
                             labSlot: matchingLabRecord.SLOT,
                             type: 'both',
-                            credits: tr.CREDITS + matchingLabRecord.CREDITS
+                            credits: tr.CREDITS + matchingLabRecord.CREDITS,
+                            venue: tr.VENUE || 'TBD',
+                            venueLab: matchingLabRecord.VENUE || 'TBD',
                         });
                     } else {
                         options.push({
@@ -978,7 +1013,8 @@ export default function CourseSelectionPage() {
                             facultyName,
                             theorySlot: tr.SLOT,
                             type: 'th',
-                            credits: tr.CREDITS
+                            credits: tr.CREDITS,
+                            venue: tr.VENUE || 'TBD',
                         });
                     }
                 });
@@ -992,7 +1028,8 @@ export default function CourseSelectionPage() {
                             facultyName,
                             labSlot: lr.SLOT,
                             type: 'lab',
-                            credits: lr.CREDITS
+                            credits: lr.CREDITS,
+                            venueLab: lr.VENUE || 'TBD',
                         });
                     }
                 });
@@ -1005,7 +1042,8 @@ export default function CourseSelectionPage() {
                         facultyName,
                         theorySlot: tr.SLOT,
                         type: 'th',
-                        credits: tr.CREDITS
+                        credits: tr.CREDITS,
+                        venue: tr.VENUE || 'TBD',
                     });
                 });
             } else if (labRecords.length > 0) {
@@ -1017,7 +1055,8 @@ export default function CourseSelectionPage() {
                         facultyName,
                         labSlot: lr.SLOT,
                         type: 'lab',
-                        credits: lr.CREDITS
+                        credits: lr.CREDITS,
+                        venueLab: lr.VENUE || 'TBD',
                     });
                 });
             }
@@ -1060,19 +1099,21 @@ export default function CourseSelectionPage() {
     }, [timetableData]);
 
     const selectedCourses = useMemo(() => {
-        const courseMap = new Map<string, { courseName: string; facultyName: string; slots: string[]; credits: number }>();
+        const courseMap = new Map<string, { courseName: string; facultyName: string; slots: string[]; venues: string[]; credits: number }>();
         currentCombination.forEach((slot) => {
             if (!courseMap.has(slot.courseCode)) {
                 courseMap.set(slot.courseCode, {
                     courseName: slot.courseName,
                     facultyName: slot.facultyName,
                     slots: [],
+                    venues: [],
                     credits: 0,
                 });
             }
             const info = courseMap.get(slot.courseCode)!;
             if (!info.slots.includes(slot.slotName)) {
                 info.slots.push(slot.slotName);
+                info.venues.push(slot.venue || 'TBD');
                 
                 // Calculate credits for this component
                 if (slot.courseCode.includes('__')) {
@@ -1632,8 +1673,8 @@ export default function CourseSelectionPage() {
                                     )}
                                 </div>
                             ) : (
-                                <div className="min-w-[900px] flex flex-col h-full">
-                                    <div className="grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_120px] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0">
+                                <div className="min-w-[1000px] flex flex-col h-full">
+                                    <div className="grid grid-cols-[40px_50px_minmax(110px,0.8fr)_minmax(180px,1.2fr)_minmax(160px,1fr)_minmax(100px,0.8fr)_minmax(100px,0.8fr)_50px_120px] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0">
                                         <div className="px-4 py-3 text-sm font-bold flex items-center justify-center">
                                             <div className="relative group flex items-center justify-center">
                                                 <input
@@ -1652,6 +1693,7 @@ export default function CourseSelectionPage() {
                                         <div className="px-4 py-3 text-sm font-bold">Course Name</div>
                                         <div className="px-4 py-3 text-sm font-bold">Faculty Name</div>
                                         <div className="px-4 py-3 text-sm font-bold">Slot</div>
+                                        <div className="px-4 py-3 text-sm font-bold">Venue</div>
                                         <div className="px-4 py-3 text-sm font-bold text-center">CR</div>
                                         <div className="px-4 py-3 text-sm font-bold text-right">Actions</div>
                                     </div>
@@ -1659,7 +1701,7 @@ export default function CourseSelectionPage() {
                                         {selectedOptions.map((opt, index) => (
                                             <div
                                                 key={opt.id}
-                                                className={`grid grid-cols-[40px_50px_minmax(120px,1fr)_minmax(200px,1.4fr)_minmax(180px,1.2fr)_minmax(100px,1fr)_60px_120px] border-b border-[#f0f0f0] items-center transition-colors ${!allSubjectsMode && disabledOptions.has(opt.id) ? 'opacity-50 bg-gray-50' : clashingIds.has(opt.id) && (!disabledOptions.has(opt.id) || allSubjectsMode) ? 'bg-red-50 hover:bg-red-100 text-red-900' : 'bg-white hover:bg-[#f8f8f8]'}`}
+                                                className={`grid grid-cols-[40px_50px_minmax(110px,0.8fr)_minmax(180px,1.2fr)_minmax(160px,1fr)_minmax(100px,0.8fr)_minmax(100px,0.8fr)_50px_120px] border-b border-[#f0f0f0] items-center transition-colors ${!allSubjectsMode && disabledOptions.has(opt.id) ? 'opacity-50 bg-gray-50' : clashingIds.has(opt.id) && (!disabledOptions.has(opt.id) || allSubjectsMode) ? 'bg-red-50 hover:bg-red-100 text-red-900' : 'bg-white hover:bg-[#f8f8f8]'}`}
                                             >
                                                 <div className="px-4 py-4 flex items-center justify-center">
                                                     <input 
@@ -1671,7 +1713,7 @@ export default function CourseSelectionPage() {
                                                                 if (e.target.checked) next.delete(opt.id);
                                                                 else next.add(opt.id);
                                                                 return next;
-                                                            });
+                                                             });
                                                         }}
                                                         disabled={allSubjectsMode}
                                                         className="w-4 h-4 rounded border-gray-300 text-[#3B5BDB] focus:ring-[#3B5BDB] cursor-pointer disabled:cursor-not-allowed"
@@ -1687,6 +1729,12 @@ export default function CourseSelectionPage() {
                                                         {opt.labSlot && <span className="font-bold">{opt.labSlot}</span>}
                                                     </div>
                                                 </div>
+                                                <div className="px-4 py-4 text-sm font-semibold text-[#1f1f1f]">
+                                                     <div className="flex flex-col gap-0.5">
+                                                         {opt.theorySlot && <span className="font-bold">{lookupVenue(opt.courseCode, opt.theorySlot, opt.facultyName)}</span>}
+                                                         {opt.labSlot && <span className="font-bold">{lookupVenue(opt.courseCode, opt.labSlot, opt.facultyName)}</span>}
+                                                     </div>
+                                                 </div>
                                                 <div className="px-4 py-4 text-sm font-bold text-gray-700 text-center">{opt.credits}</div>
                                                 <div className="px-4 py-4 flex items-center justify-end gap-2">
                                                     <button
@@ -2087,7 +2135,7 @@ export default function CourseSelectionPage() {
                                             <td className="px-5 py-4 text-[16px] font-medium text-black">{code}</td>
                                             <td className={`px-5 py-4 font-medium text-black ${info.courseName.length > 40 ? 'text-[13px]' : 'text-[16px]'}`}>{info.courseName}</td>
                                             <td className={`px-5 py-4 font-medium text-black ${info.facultyName.length > 25 ? 'text-[13px]' : 'text-[16px]'}`}>{info.facultyName}</td>
-                                            <td className="px-5 py-4 text-[16px] font-medium text-black">TBD</td>
+                                            <td className="px-5 py-4 text-[16px] font-medium text-black whitespace-pre-wrap">{info.venues.join('\n')}</td>
                                             <td className="px-5 py-4 text-[16px] font-medium text-black">{info.credits}</td>
                                         </tr>
                                     ))}
@@ -2174,7 +2222,13 @@ export default function CourseSelectionPage() {
                             </p>
                             <p className="text-[16px] leading-[1.35] text-black">
                                 <span className="font-black">Classroom:</span>{' '}
-                                <span className="font-semibold text-black/75">TBD</span>
+                                <span className="font-semibold text-black/75">
+                                    {(() => {
+                                        const v = selectedSlot.venue;
+                                        if (v && v !== 'TBD') return v;
+                                        return lookupVenue(selectedSlot.courseCode, selectedSlot.slotName, selectedSlot.facultyName);
+                                    })()}
+                                </span>
                             </p>
                         </div>
                     </div>

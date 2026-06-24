@@ -12,6 +12,21 @@ import { generateTT } from '@/lib/utils';
 import { useTimetable } from '@/lib/TimeTableContext';
 import { getPlannerStoredValue, setPlannerStoredValue } from '@/lib/plannerStorage';
 import ModeHelpDialog from '@/components/ModeHelpDialog';
+import chennaiCourses from '@/data/all_data_chennai';
+
+/* ── Venue lookup from raw data ── */
+const _venueIndex = new Map<string, string>();
+chennaiCourses.forEach((r) => {
+    if ((r as any).VENUE) _venueIndex.set(`${r.CODE}|${r.SLOT}|${r.FACULTY}`, (r as any).VENUE);
+});
+
+function lookupVenue(courseCode: string, slot: string, facultyName: string): string {
+    const key = `${courseCode}|${slot}|${facultyName}`;
+    if (_venueIndex.has(key)) return _venueIndex.get(key)!;
+    const firstSlot = slot.split('+')[0]?.trim();
+    const partialKey = `${courseCode}|${firstSlot}|${facultyName}`;
+    return _venueIndex.get(partialKey) || 'TBD';
+}
 
 type FacultyEntry = {
     uid: string;
@@ -566,13 +581,14 @@ export default function CoursesPage() {
                         </div>
 
                         <div className="flex-1 min-h-0 w-full overflow-x-auto custom-scrollbar">
-                            <div className="min-w-[800px] flex flex-col h-full">
-                                <div className="grid grid-cols-[60px_minmax(120px,1fr)_minmax(220px,1.4fr)_minmax(180px,1.2fr)_minmax(120px,1fr)_minmax(90px,120px)] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0">
+                            <div className="min-w-[900px] flex flex-col h-full">
+                                <div className="grid grid-cols-[60px_minmax(110px,0.8fr)_minmax(200px,1.3fr)_minmax(160px,1.1fr)_minmax(110px,0.8fr)_minmax(100px,0.7fr)_minmax(90px,120px)] border-b border-[#ededed] bg-[#fcfcfc] text-[#1f1f1f] shrink-0">
                                     <div className="px-5 py-3 text-sm font-bold">No</div>
                                     <div className="px-5 py-3 text-sm font-bold">Course Code</div>
                                     <div className="px-5 py-3 text-sm font-bold">Course Name</div>
                                     <div className="px-5 py-3 text-sm font-bold">Faculty Name</div>
                                     <div className="px-5 py-3 text-sm font-bold">Slot</div>
+                                    <div className="px-5 py-3 text-sm font-bold">Venue</div>
                                     <div className="px-5 py-3 text-sm font-bold text-right">Actions</div>
                                 </div>
 
@@ -591,7 +607,7 @@ export default function CoursesPage() {
                                     return (
                                         <div key={faculty.uid}>
                                             <div
-                                                className={`grid grid-cols-[60px_minmax(120px,1fr)_minmax(220px,1.4fr)_minmax(180px,1.2fr)_minmax(120px,1fr)_minmax(90px,120px)] border-b border-[#f0f0f0] items-center transition-colors ${isDusting ? 'pointer-events-none' : ''} ${hasClash ? 'bg-red-50' : 'bg-white hover:bg-[#f8f8f8]'} ${rowEffects[faculty.uid] || ''}`}
+                                                className={`grid grid-cols-[60px_minmax(110px,0.8fr)_minmax(200px,1.3fr)_minmax(160px,1.1fr)_minmax(110px,0.8fr)_minmax(100px,0.7fr)_minmax(90px,120px)] border-b border-[#f0f0f0] items-center transition-colors ${isDusting ? 'pointer-events-none' : ''} ${hasClash ? 'bg-red-50' : 'bg-white hover:bg-[#f8f8f8]'} ${rowEffects[faculty.uid] || ''}`}
                                             >
                                                 <div className={`px-5 py-4 text-sm font-semibold ${hasClash ? 'text-red-600' : 'text-[#1f1f1f]'}`}>{faculty.no}</div>
                                                 <div className={`px-5 py-4 text-sm font-semibold font-mono ${hasClash ? 'text-red-600' : 'text-[#1f1f1f]'}`}>{faculty.courseCode}</div>
@@ -604,6 +620,9 @@ export default function CoursesPage() {
                                                 <div className={`px-5 py-4 text-sm font-semibold ${hasClash ? 'text-red-600' : 'text-[#1f1f1f]'}`}>
                                                     {slotParts.map((s, i) => <div key={i}>{s}</div>)}
                                                 </div>
+                                                 <div className={`px-5 py-4 text-sm font-semibold ${hasClash ? 'text-red-600' : 'text-[#1f1f1f]'}`}>
+                                                     {lookupVenue(faculty.courseCode, faculty.slot, faculty.facultyName)}
+                                                 </div>
                                                 <div className="px-5 py-4 flex items-center justify-end gap-2">
                                                     <button
                                                         onClick={() => handleMoveUp(fullIndex)}
@@ -641,9 +660,9 @@ export default function CoursesPage() {
                                                 </div>
                                             </div>
                                             {deletedRow && deletedRow.index === index + 1 && (
-                                                <div className="grid grid-cols-[60px_minmax(120px,1fr)_minmax(220px,1.4fr)_minmax(180px,1.2fr)_minmax(120px,1fr)_minmax(90px,120px)] border-b border-[#f0f0f0] bg-[#fafafa] items-center">
+                                                <div className="grid grid-cols-[60px_minmax(110px,0.8fr)_minmax(200px,1.3fr)_minmax(160px,1.1fr)_minmax(110px,0.8fr)_minmax(100px,0.7fr)_minmax(90px,120px)] border-b border-[#f0f0f0] bg-[#fafafa] items-center">
                                                     <div />
-                                                    <div className="col-span-3 px-5 py-3 text-sm text-gray-600 italic">Subject deleted.</div>
+                                                    <div className="col-span-4 px-5 py-3 text-sm text-gray-600 italic">Subject deleted.</div>
                                                     <div className="px-5 py-3 col-span-2 text-right">
                                                         <button
                                                             onClick={handleUndoSingleDelete}
@@ -657,9 +676,9 @@ export default function CoursesPage() {
                                 })}
 
                                 {deletedRow && faculties.length === 0 && (
-                                    <div className="grid grid-cols-[60px_minmax(120px,1fr)_minmax(220px,1.4fr)_minmax(180px,1.2fr)_minmax(120px,1fr)_minmax(90px,120px)] border-b border-[#f0f0f0] bg-[#fafafa] items-center">
+                                    <div className="grid grid-cols-[60px_minmax(110px,0.8fr)_minmax(200px,1.3fr)_minmax(160px,1.1fr)_minmax(110px,0.8fr)_minmax(100px,0.7fr)_minmax(90px,120px)] border-b border-[#f0f0f0] bg-[#fafafa] items-center">
                                         <div />
-                                        <div className="col-span-3 px-5 py-3 text-sm text-gray-600 italic">Subject deleted.</div>
+                                        <div className="col-span-4 px-5 py-3 text-sm text-gray-600 italic">Subject deleted.</div>
                                         <div className="px-5 py-3 col-span-2 text-right">
                                             <button
                                                 onClick={handleUndoSingleDelete}

@@ -52,7 +52,7 @@ function buildChennaiCourseCatalog() {
         current.offerings.push({
             faculty: record.FACULTY,
             slot: record.SLOT,
-            venue: '',
+            venue: (record as any).VENUE || 'TBD',
         });
 
         courseMap.set(record.CODE, current);

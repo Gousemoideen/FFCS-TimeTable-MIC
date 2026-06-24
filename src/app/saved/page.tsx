@@ -13,6 +13,25 @@ import Image from 'next/image';
 import './saved.css';
 import { setPlannerStoredValue } from '@/lib/plannerStorage';
 import { getChennaiCourseType, getCourseCredits } from '@/lib/chennaiCatalog';
+import chennaiCourses from '@/data/all_data_chennai';
+
+/* ── Venue lookup from raw data ── */
+const venueIndex = new Map<string, string>();
+chennaiCourses.forEach((r) => {
+    const key = `${r.CODE}|${r.SLOT}|${r.FACULTY}`;
+    if ((r as any).VENUE) venueIndex.set(key, (r as any).VENUE);
+});
+
+function lookupVenue(courseCode: string, slot: string, facultyName: string): string {
+    // Try exact match first
+    const key = `${courseCode}|${slot}|${facultyName}`;
+    if (venueIndex.has(key)) return venueIndex.get(key)!;
+    // Try matching just the first slot component (for multi-slot entries)
+    const firstSlot = slot.split('+')[0]?.trim();
+    const partialKey = `${courseCode}|${firstSlot}|${facultyName}`;
+    if (venueIndex.has(partialKey)) return venueIndex.get(partialKey)!;
+    return 'TBD';
+}
 import LoginModal from '@/components/loginPopup';
 
 
@@ -950,14 +969,19 @@ function TimetableDetailView({
     });
 
     /* unique courses for Selected Courses table */
-    const courseMap = new Map<string, { courseName: string; facultyName: string; slots: string[]; credits: number }>();
+    const courseMap = new Map<string, { courseName: string; facultyName: string; slots: string[]; venues: string[]; credits: number }>();
     tt.slots.forEach(s => {
         if (!courseMap.has(s.courseCode)) {
-            courseMap.set(s.courseCode, { courseName: s.courseName, facultyName: s.facultyName, slots: [], credits: 0 });
+            courseMap.set(s.courseCode, { courseName: s.courseName, facultyName: s.facultyName, slots: [], venues: [], credits: 0 });
         }
         const info = courseMap.get(s.courseCode)!;
         if (!info.slots.includes(s.slot)) {
             info.slots.push(s.slot);
+            const savedVenue = (s as any).venue;
+            const resolvedVenue = (savedVenue && savedVenue !== 'TBD')
+                ? savedVenue
+                : lookupVenue(s.courseCode, s.slot, s.facultyName);
+            info.venues.push(resolvedVenue);
             
             // Calculate credits
             if (s.courseCode.includes('__')) {
@@ -1212,7 +1236,7 @@ function TimetableDetailView({
                                             <td style={{ padding: '16px 20px', fontSize: 16, fontWeight: 500 }}>{code}</td>
                                             <td style={{ padding: '16px 20px', fontSize: 16, fontWeight: 500 }}>{info.courseName}</td>
                                             <td style={{ padding: '16px 20px', fontSize: 16, fontWeight: 500 }}>{info.facultyName}</td>
-                                            <td style={{ padding: '16px 20px', fontSize: 16, fontWeight: 500 }}>TBD</td>
+                                            <td style={{ padding: '16px 20px', fontSize: 16, fontWeight: 500, whiteSpace: 'pre-wrap' }}>{info.venues.join('\n')}</td>
                                             <td style={{ padding: '16px 20px', fontSize: 16, fontWeight: 500 }}>{info.credits}</td>
                                         </tr>
                                     ))}
