@@ -131,18 +131,18 @@ const TEAM_MEMBERS: TeamMember[] = [
     category: "frontend",
     tagline: "Grid components & interactive slots modularizer.",
     gradient: "from-[#FFD8A8] to-[#E8590C]",
-    photo: "https://h8z6stjynz.ufs.sh/f/dummy_surya",
-    github: "https://github.com/dummy",
-    linkedin: "https://linkedin.com/in/dummy"
+    photo: "https://h8z6stjynz.ufs.sh/f/nEev6VX4XfKE3owzoTOlbGZuJ6WArzQs07hUdD45HqnjPeTw",
+    github: "https://github.com/surya-749",
+    linkedin: "https://linkedin.com/in/surya-R008"
   },
   {
     name: "Souptik Dam",
     role: "Developer",
     category: "fullstack",
-    tagline: "Clash-detection logic & optimization builder.",
+    tagline: "Clash-detection logic & built the Timetable section.",
     gradient: "from-[#D3F9D8] to-[#2B8A3E]",
     photo: "https://h8z6stjynz.ufs.sh/f/dummy_souptik",
-    github: "https://github.com/dummy",
+    github: "https://github.com/TabasKo0",
     linkedin: "https://linkedin.com/in/dummy"
   },
   {
@@ -161,7 +161,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     category: "frontend",
     tagline: "Built the simplified version page of the planner.",
     gradient: "from-[#FFD8A8] to-[#E8590C]",
-    photo: "https://h8z6stjynz.ufs.sh/f/dummy_udarsh",
+    photo: "https://h8z6stjynz.ufs.sh/f/nEev6VX4XfKEv0yLdJhWmy6tpuiexQX81z0fGaEJbT52MDPl",
     github: "https://github.com/udarshcode",
     linkedin: "https://www.linkedin.com/in/udarsh-goyal-256095383/"
   }
