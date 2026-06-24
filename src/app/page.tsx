@@ -482,7 +482,7 @@ export default function LandingPage() {
                 {/* Option A: Uploadthing Video Player (Active) */}
                 <video
                   ref={videoRef}
-                  src="https://h8z6stjynz.ufs.sh/f/nEev6VX4XfKE5CB0pMEvK0cVWaoY4UbStprle19NBx8f3nZT"
+                  src="https://h8z6stjynz.ufs.sh/f/nEev6VX4XfKEQynKI7l1Hn7zksoqKEgIFuwlcDyadAj6SP0V"
                   poster="/section1-preview.png"
                   controls
                   playsInline
